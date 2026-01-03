@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حصار القلعة - المحارب الأسطوري الإصدار المتطور</title>
+    <title>حصار القلعة - النسخة النهائية</title>
     <style>
         * {
             margin: 0;
@@ -12,6 +12,8 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
         }
         
         body {
@@ -22,7 +24,7 @@
             height: 100vh;
             width: 100vw;
         }
-        
+
         /* شاشة التحميل */
         #loadingScreen {
             position: fixed;
@@ -37,262 +39,257 @@
             align-items: center;
             z-index: 1000;
         }
-        
-        .loader {
-            width: 200px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 30px 0;
+
+        .loader-container {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #ffd700;
+            text-align: center;
         }
-        
+
+        .loader-title {
+            color: #ffd700;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .loader-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
         .loader-fill {
             height: 100%;
             background: linear-gradient(90deg, #dc143c, #ffd700);
             width: 0%;
             transition: width 0.3s;
-            border-radius: 2px;
+            border-radius: 10px;
         }
-        
-        /* الشاشة الرئيسية للعبة */
+
+        .loading-details {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* إحصائيات التحميل */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .stat-item {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .stat-value {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* الشاشة الرئيسية */
         #gameScreen {
             width: 100vw;
             height: 100vh;
             position: relative;
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
             overflow: hidden;
-            display: none;
         }
-        
-        /* طبقة الكانفاس */
+
+        /* الكانفاس الرئيسي - بحجم أكبر */
         #gameCanvas {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 1920px;
+            height: 1080px;
             z-index: 1;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
-        
+
         /* طبقة واجهة المستخدم */
         .ui-layer {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             z-index: 2;
             pointer-events: none;
+            overflow: hidden;
         }
-        
-        /* شريط المعلومات العلوي المحسن */
-        .top-bar {
+
+        /* شريط المعلومات العلوي - مصغر */
+        .top-hud {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 40, 0.9));
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.95),
+                rgba(20, 20, 40, 0.95));
             padding: 12px 20px;
             border-radius: 20px;
             border: 3px solid #ffd700;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
             pointer-events: all;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            transform: scale(0.95);
+            transform-origin: top center;
         }
-        
-        .player-info {
+
+        .health-container {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+            min-width: 200px;
         }
-        
-        .stat-container {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 180px;
-        }
-        
-        .stat-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #ffd700;
-        }
-        
-        .stat-bar-container {
-            width: 100%;
-            height: 12px;
+
+        .health-bar {
+            flex: 1;
+            height: 16px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
-        
-        .stat-bar {
+
+        .health-fill {
             height: 100%;
-            border-radius: 6px;
+            background: linear-gradient(90deg, 
+                #ff0000, #ff6b6b, #ff0000);
+            background-size: 200% 100%;
+            animation: gradientFlow 3s infinite linear;
+            border-radius: 8px;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
         }
-        
-        .stat-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.3),
-                transparent
-            );
-            animation: shimmer 2s infinite;
-        }
-        
-        .health-bar { 
-            background: linear-gradient(90deg, #ff0000, #ff6b6b, #ff0000);
-            background-size: 200% 100%;
-            animation: gradientMove 3s infinite linear;
-        }
-        
-        .armor-bar { 
-            background: linear-gradient(90deg, #4169e1, #6495ed, #4169e1);
-            background-size: 200% 100%;
-            animation: gradientMove 3s infinite linear;
-        }
-        
-        .stamina-bar { 
-            background: linear-gradient(90deg, #32cd32, #7cfc00, #32cd32);
-            background-size: 200% 100%;
-            animation: gradientMove 3s infinite linear;
-        }
-        
-        .stat-text {
-            font-size: 12px;
+
+        .health-text {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            min-width: 80px;
             text-align: center;
-            margin-top: 2px;
-            color: #aaa;
         }
-        
-        /* موارد اللاعب */
-        .resources {
+
+        .resources-container {
             display: flex;
-            gap: 20px;
+            gap: 25px;
+            align-items: center;
         }
-        
+
         .resource-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 215, 0, 0.1);
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.15),
+                rgba(255, 215, 0, 0.05));
             padding: 8px 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            font-size: 18px;
+            font-weight: bold;
         }
-        
-        /* معلومات الموجة */
-        .wave-info {
-            background: linear-gradient(135deg, rgba(139, 0, 0, 0.8), rgba(220, 20, 60, 0.8));
-            padding: 10px 20px;
+
+        .wave-container {
+            background: linear-gradient(135deg, 
+                rgba(139, 0, 0, 0.9),
+                rgba(220, 20, 60, 0.9));
+            padding: 8px 20px;
             border-radius: 12px;
             border: 2px solid #ffd700;
             text-align: center;
-            min-width: 200px;
+            min-width: 180px;
         }
-        
-        /* شريط التقدم */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            margin-top: 5px;
-            overflow: hidden;
+
+        .wave-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ffff, #0080ff);
-            border-radius: 3px;
-            transition: width 0.5s ease-out;
-        }
-        
+
         /* منطقة التحكم المحسنة */
         .control-area {
             position: absolute;
-            bottom: 180px;
+            bottom: 150px;
             left: 50%;
-            transform: translateX(-50%);
-            width: 500px;
-            height: 500px;
+            transform: translateX(-50%) scale(1.2);
+            width: 400px;
+            height: 400px;
             z-index: 3;
             pointer-events: none;
         }
-        
+
         /* التحكم الدائري المحسن */
-        .circular-controls {
+        .control-circle {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
+            width: 350px;
+            height: 350px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 70%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: radial-gradient(circle, 
+                rgba(0, 0, 0, 0.6) 0%,
+                rgba(0, 0, 0, 0.3) 50%,
+                transparent 70%);
+            border: 3px solid rgba(255, 215, 0, 0.4);
             pointer-events: all;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 60px rgba(255, 215, 0, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
         }
-        
-        /* زر التحكم المحسن */
+
+        /* أزرار التحكم المحسنة */
         .control-button {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             background: linear-gradient(145deg, 
                 rgba(139, 0, 0, 0.95),
                 rgba(220, 20, 60, 0.95));
-            border: 3px solid #ffd700;
+            border: 4px solid #ffd700;
             color: white;
-            font-size: 28px;
+            font-size: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             user-select: none;
             box-shadow: 
-                0 8px 25px rgba(0, 0, 0, 0.5),
-                inset 0 2px 10px rgba(255, 255, 255, 0.1);
+                0 10px 30px rgba(0, 0, 0, 0.6),
+                inset 0 2px 15px rgba(255, 255, 255, 0.2);
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: all;
             z-index: 4;
         }
-        
-        .control-button:hover {
-            transform: scale(1.1);
-            box-shadow: 
-                0 12px 30px rgba(255, 215, 0, 0.3),
-                inset 0 2px 15px rgba(255, 255, 255, 0.2);
-        }
-        
+
         .control-button:active {
-            transform: scale(0.9);
+            transform: scale(0.85);
             box-shadow: 
-                0 4px 15px rgba(0, 0, 0, 0.3),
-                inset 0 2px 8px rgba(0, 0, 0, 0.2);
+                0 5px 15px rgba(0, 0, 0, 0.4),
+                inset 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-        
+
         /* أزرار الحركة */
         .move-btn {
             background: linear-gradient(145deg, 
@@ -300,53 +297,46 @@
                 rgba(100, 149, 237, 0.95));
             border-color: #4169e1;
         }
-        
-        .action-btn {
-            background: linear-gradient(145deg, 
-                rgba(255, 69, 0, 0.95),
-                rgba(255, 140, 0, 0.95));
-            border-color: #ff4500;
-        }
-        
+
         /* تحديد مواقع الأزرار */
         .move-up { top: 20px; left: 50%; transform: translateX(-50%); }
         .move-left { top: 50%; left: 20px; transform: translateY(-50%); }
         .move-right { top: 50%; right: 20px; transform: translateY(-50%); }
         .move-down { bottom: 20px; left: 50%; transform: translateX(-50%); }
         
-        .jump-btn { top: 80px; left: 80px; }
-        .dash-btn { top: 80px; right: 80px; }
-        .attack-btn { bottom: 80px; right: 80px; }
-        .block-btn { bottom: 80px; left: 80px; }
-        
-        /* اختيار الأسلحة المحسن */
-        .weapon-selector {
+        .jump-btn { top: 70px; left: 70px; }
+        .dash-btn { top: 70px; right: 70px; }
+        .attack-btn { bottom: 70px; right: 70px; background: linear-gradient(145deg, #ff4500, #ff8c00); }
+        .block-btn { bottom: 70px; left: 70px; background: linear-gradient(145deg, #4169e1, #6495ed); }
+
+        /* شريط الأسلحة - مصغر */
+        .weapon-bar {
             position: absolute;
-            bottom: 40px;
+            bottom: 30px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) scale(1.1);
             display: flex;
-            gap: 15px;
+            gap: 12px;
             background: linear-gradient(135deg, 
-                rgba(0, 0, 0, 0.85),
-                rgba(20, 20, 40, 0.85));
-            padding: 20px;
+                rgba(0, 0, 0, 0.9),
+                rgba(20, 20, 40, 0.9));
+            padding: 15px 25px;
             border-radius: 25px;
             border: 3px solid #dc143c;
-            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.4);
             pointer-events: all;
             z-index: 3;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
-        
+
         .weapon-slot {
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
             border-radius: 15px;
             background: linear-gradient(135deg, 
                 rgba(50, 50, 50, 0.9),
                 rgba(30, 30, 30, 0.9));
-            border: 2px solid #666;
+            border: 3px solid #666;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -357,87 +347,63 @@
             position: relative;
             overflow: hidden;
         }
-        
-        .weapon-slot::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: left 0.5s;
-        }
-        
-        .weapon-slot:hover::before {
-            left: 100%;
-        }
-        
+
         .weapon-slot:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
         }
-        
+
         .weapon-slot.active {
             border-color: #ffd700;
             background: linear-gradient(135deg, 
-                rgba(139, 0, 0, 0.7),
-                rgba(220, 20, 60, 0.7));
+                rgba(139, 0, 0, 0.8),
+                rgba(220, 20, 60, 0.8));
             box-shadow: 
-                0 0 25px #ffd700,
-                inset 0 0 15px rgba(255, 215, 0, 0.3);
+                0 0 30px #ffd700,
+                inset 0 0 20px rgba(255, 215, 0, 0.4);
             transform: scale(1.15);
         }
-        
-        .weapon-slot.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
-        
+
         .weapon-name {
             font-size: 10px;
-            margin-top: 5px;
+            margin-top: 3px;
             color: #aaa;
+            font-weight: bold;
         }
-        
+
         .ammo-count {
             position: absolute;
-            bottom: 5px;
-            right: 5px;
+            bottom: 3px;
+            right: 3px;
             background: #dc143c;
             color: white;
             font-size: 11px;
             padding: 2px 6px;
             border-radius: 10px;
             font-weight: bold;
-            min-width: 20px;
+            min-width: 22px;
             text-align: center;
+            border: 1px solid #ffd700;
         }
-        
-        /* المتجر المتطور */
-        .shop-container {
+
+        /* الأزرار الجانبية */
+        .side-buttons {
             position: absolute;
-            top: 90px;
+            top: 120px;
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             z-index: 3;
             pointer-events: all;
         }
-        
-        .shop-toggle {
+
+        .side-button {
             width: 70px;
             height: 70px;
             background: linear-gradient(135deg, #8b0000, #dc143c);
             border: 3px solid #ffd700;
-            border-radius: 50%;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -446,331 +412,113 @@
             box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
             transition: all 0.3s;
         }
-        
-        .shop-toggle:hover {
+
+        .side-button:hover {
             transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.5);
         }
-        
-        .shop-panel {
-            width: 350px;
-            background: linear-gradient(135deg, 
-                rgba(0, 0, 0, 0.95),
-                rgba(20, 20, 40, 0.95));
-            border-radius: 20px;
-            border: 3px solid #ffd700;
-            padding: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(15px);
-            display: none;
-        }
-        
-        .shop-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ffd700;
-        }
-        
-        .shop-categories {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .category-btn {
-            flex: 1;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #666;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        
-        .category-btn.active {
-            background: #dc143c;
-            border-color: #ffd700;
-        }
-        
-        .shop-items {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-        
-        .shop-item {
-            background: linear-gradient(135deg, 
-                rgba(50, 50, 50, 0.7),
-                rgba(30, 30, 30, 0.7));
-            border: 2px solid #444;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .shop-item:hover {
-            transform: translateX(-5px);
-            border-color: #ffd700;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-        }
-        
-        .shop-item.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        
-        .item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .item-name {
-            font-size: 16px;
-            color: #ffd700;
-        }
-        
-        .item-desc {
-            font-size: 12px;
-            color: #aaa;
-            max-width: 200px;
-        }
-        
-        .item-price {
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        /* نافذة المهارات */
-        .skills-panel {
+
+        /* النوافذ المنبثقة */
+        .popup-window {
             position: absolute;
-            top: 90px;
-            left: 20px;
-            width: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
             background: linear-gradient(135deg, 
                 rgba(0, 0, 0, 0.95),
                 rgba(20, 20, 40, 0.95));
-            border-radius: 20px;
-            border: 3px solid #4169e1;
-            padding: 20px;
+            border-radius: 25px;
+            border: 4px solid #ffd700;
+            padding: 25px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
             display: none;
+            z-index: 100;
             pointer-events: all;
-            backdrop-filter: blur(15px);
         }
-        
-        .skill-tree {
-            margin-top: 15px;
+
+        /* مؤشرات الضرر */
+        .damage-indicator {
+            position: absolute;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 
+                0 0 15px currentColor,
+                0 0 30px currentColor;
+            pointer-events: none;
+            z-index: 10;
+            animation: floatDamage 1.2s ease-out forwards;
         }
-        
-        .skill-node {
-            background: rgba(65, 105, 225, 0.2);
-            border: 2px solid #4169e1;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
+
+        @keyframes floatDamage {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-60px) scale(1.3);
+            }
         }
-        
-        .skill-node:hover {
-            background: rgba(65, 105, 225, 0.4);
-            transform: translateX(5px);
+
+        @keyframes gradientFlow {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
-        
-        /* تأثيرات الجرافيكس */
-        .damage-overlay {
+
+        /* تأثيرات الشاشة */
+        .screen-effect {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(
-                circle at var(--x, 50%) var(--y, 50%),
-                rgba(255, 0, 0, 0.4) 0%,
-                transparent 60%
-            );
             pointer-events: none;
+            z-index: 5;
+        }
+
+        .hit-flash {
+            background: radial-gradient(circle at var(--hit-x, 50%) var(--hit-y, 50%), 
+                rgba(255, 0, 0, 0.4) 0%,
+                transparent 70%);
             opacity: 0;
-            z-index: 10;
             transition: opacity 0.3s;
         }
-        
-        .hit-indicator {
-            position: absolute;
-            font-size: 24px;
-            font-weight: bold;
-            color: #ff0000;
-            text-shadow: 0 0 10px #ff0000;
-            pointer-events: none;
-            z-index: 11;
-            animation: floatUp 1s ease-out forwards;
+
+        .heal-flash {
+            background: radial-gradient(circle at var(--heal-x, 50%) var(--heal-y, 50%), 
+                rgba(0, 255, 0, 0.3) 0%,
+                transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        
-        /* رسائل التلميح */
-        .hint-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, 
-                rgba(0, 0, 0, 0.9),
-                rgba(20, 20, 40, 0.9));
-            color: #ffd700;
-            padding: 25px 40px;
-            border-radius: 20px;
-            border: 3px solid #ffd700;
-            text-align: center;
-            font-size: 22px;
-            z-index: 100;
-            display: none;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            min-width: 300px;
-        }
-        
-        /* شاشة الإنجازات */
-        .achievement-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            border: 3px solid #ffd700;
-            padding: 15px 20px;
-            border-radius: 15px;
-            display: none;
-            align-items: center;
-            gap: 15px;
-            z-index: 1000;
-            animation: slideInRight 0.5s ease-out;
-        }
-        
-        /* الحركات */
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px #ffd700; }
-            50% { box-shadow: 0 0 40px #ffd700; }
-        }
-        
-        /* التكيف مع الشاشات الصغيرة */
+
+        /* التكيف مع الشاشات */
         @media (max-width: 768px) {
             .control-area {
-                width: 400px;
-                height: 400px;
-                bottom: 150px;
+                transform: translateX(-50%) scale(1);
+                bottom: 120px;
             }
             
-            .circular-controls {
-                width: 320px;
-                height: 320px;
+            .control-circle {
+                width: 300px;
+                height: 300px;
             }
             
             .control-button {
                 width: 65px;
                 height: 65px;
-                font-size: 24px;
+                font-size: 26px;
             }
             
-            .top-bar {
-                flex-direction: column;
-                gap: 10px;
-                padding: 10px;
-            }
-            
-            .weapon-selector {
-                padding: 15px;
+            .weapon-bar {
+                transform: translateX(-50%) scale(0.9);
                 bottom: 20px;
             }
             
-            .weapon-slot {
-                width: 60px;
-                height: 60px;
-                font-size: 28px;
-            }
-            
-            .shop-panel {
-                width: 300px;
-                right: 10px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .control-area {
-                width: 350px;
-                height: 350px;
-            }
-            
-            .circular-controls {
-                width: 280px;
-                height: 280px;
-            }
-            
-            .control-button {
-                width: 55px;
-                height: 55px;
-                font-size: 20px;
-            }
-            
-            .weapon-selector {
-                gap: 10px;
-                padding: 10px;
-            }
-            
-            .weapon-slot {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
+            .top-hud {
+                transform: scale(0.85);
             }
         }
     </style>
@@ -778,376 +526,403 @@
 <body>
     <!-- شاشة التحميل -->
     <div id="loadingScreen">
-        <h1 style="color: #ffd700; font-size: 3em; margin-bottom: 20px;">حصار القلعة</h1>
-        <p style="color: #aaa; margin-bottom: 30px; text-align: center; max-width: 80%;">
-            تحميل عالم المحارب الأسطوري...
-        </p>
-        <div class="loader">
-            <div class="loader-fill" id="loaderFill"></div>
+        <div class="loader-container">
+            <div class="loader-title">🚀 تحميل عالم القلعة الأسطوري</div>
+            <div class="loader-bar">
+                <div class="loader-fill" id="loaderFill"></div>
+            </div>
+            <div class="loading-details" id="loadingText">تهيئة النظام...</div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div>🎨 الجرافيكس:</div>
+                    <div class="stat-value" id="graphicsStat">0%</div>
+                </div>
+                <div class="stat-item">
+                    <div>🎮 التحكم:</div>
+                    <div class="stat-value" id="controlsStat">0%</div>
+                </div>
+                <div class="stat-item">
+                    <div>🎯 الأسلحة:</div>
+                    <div class="stat-value" id="weaponsStat">0%</div>
+                </div>
+                <div class="stat-item">
+                    <div>👾 الأعداء:</div>
+                    <div class="stat-value" id="enemiesStat">0%</div>
+                </div>
+            </div>
         </div>
-        <p id="loadingText" style="margin-top: 20px; color: #ffd700;">جاري تهيئة الجرافيكس...</p>
     </div>
-    
+
     <!-- الشاشة الرئيسية -->
     <div id="gameScreen">
         <canvas id="gameCanvas"></canvas>
         
         <div class="ui-layer">
             <!-- شريط المعلومات العلوي -->
-            <div class="top-bar">
-                <div class="player-info">
-                    <div class="stat-container">
-                        <div class="stat-label">
-                            <span>❤️</span>
-                            <span>الصحة</span>
-                        </div>
-                        <div class="stat-bar-container">
-                            <div id="healthBar" class="stat-bar health-bar" style="width: 100%"></div>
-                        </div>
-                        <div id="healthText" class="stat-text">100/100</div>
-                    </div>
-                    
-                    <div class="stat-container">
-                        <div class="stat-label">
-                            <span>🛡️</span>
-                            <span>الدرع</span>
-                        </div>
-                        <div class="stat-bar-container">
-                            <div id="armorBar" class="stat-bar armor-bar" style="width: 100%"></div>
-                        </div>
-                        <div id="armorText" class="stat-text">50/50</div>
-                    </div>
-                    
-                    <div class="stat-container">
-                        <div class="stat-label">
-                            <span>⚡</span>
-                            <span>الطاقة</span>
-                        </div>
-                        <div class="stat-bar-container">
-                            <div id="staminaBar" class="stat-bar stamina-bar" style="width: 100%"></div>
-                        </div>
-                        <div id="staminaText" class="stat-text">100/100</div>
+            <div class="top-hud">
+                <div class="health-container">
+                    <div class="health-text">❤️ <span id="healthValue">100</span>/100</div>
+                    <div class="health-bar">
+                        <div id="healthFill" class="health-fill" style="width: 100%"></div>
                     </div>
                 </div>
                 
-                <div class="resources">
+                <div class="resources-container">
                     <div class="resource-item">
                         <span>💰</span>
-                        <span id="goldText">1000</span>
+                        <span id="goldValue">1000</span>
                     </div>
                     <div class="resource-item">
                         <span>⭐</span>
-                        <span id="scoreText">0</span>
+                        <span id="scoreValue">0</span>
                     </div>
                     <div class="resource-item">
-                        <span>💎</span>
-                        <span id="gemText">0</span>
+                        <span>🎯</span>
+                        <span id="levelValue">1</span>
                     </div>
                 </div>
                 
-                <div class="wave-info">
-                    <div style="font-size: 18px; font-weight: bold;">
-                        🌊 الموجة: <span id="waveText">1</span>
-                    </div>
-                    <div style="font-size: 14px; margin-top: 5px;">
-                        👾 متبقية: <span id="enemiesText">10</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div id="waveProgress" class="progress-fill" style="width: 0%"></div>
-                    </div>
+                <div class="wave-container">
+                    <div class="wave-text">🌊 <span id="waveValue">1</span> | 👾 <span id="enemiesLeft">10</span></div>
                 </div>
             </div>
             
-            <!-- منطقة التحكم الدائري -->
+            <!-- منطقة التحكم -->
             <div class="control-area">
-                <div class="circular-controls"></div>
+                <div class="control-circle"></div>
                 
                 <!-- أزرار الحركة -->
-                <div class="control-button move-btn move-up" data-action="moveUp" title="تحرك للأعلى">
+                <div class="control-button move-btn move-up" data-action="moveUp">
                     ↑
                 </div>
-                <div class="control-button move-btn move-left" data-action="moveLeft" title="تحرك لليسار">
+                <div class="control-button move-btn move-left" data-action="moveLeft">
                     ←
                 </div>
-                <div class="control-button move-btn move-right" data-action="moveRight" title="تحرك لليمين">
+                <div class="control-button move-btn move-right" data-action="moveRight">
                     →
                 </div>
-                <div class="control-button move-btn move-down" data-action="moveDown" title="تحرك للأسفل">
+                <div class="control-button move-btn move-down" data-action="moveDown">
                     ↓
                 </div>
                 
                 <!-- أزرار الإجراءات -->
-                <div class="control-button action-btn jump-btn" data-action="jump" title="القفز">
+                <div class="control-button jump-btn" data-action="jump">
                     ⬆️
                 </div>
-                <div class="control-button action-btn dash-btn" data-action="dash" title="الدفعة السريعة">
+                <div class="control-button dash-btn" data-action="dash">
                     💨
                 </div>
-                <div class="control-button action-btn attack-btn" data-action="attack" title="الهجوم">
+                <div class="control-button attack-btn" data-action="attack">
                     ⚔️
                 </div>
-                <div class="control-button action-btn block-btn" data-action="block" title="الدفاع">
+                <div class="control-button block-btn" data-action="block">
                     🛡️
                 </div>
             </div>
             
-            <!-- اختيار الأسلحة -->
-            <div class="weapon-selector">
-                <!-- 10 أسلحة مختلفة -->
-                <div class="weapon-slot active" data-weapon="sword" title="السيف الأساسي">
+            <!-- شريط الأسلحة -->
+            <div class="weapon-bar">
+                <!-- 10 أسلحة -->
+                <div class="weapon-slot active" data-weapon="sword">
                     🗡️
                     <div class="weapon-name">سيف</div>
                 </div>
-                <div class="weapon-slot" data-weapon="dagger" title="خنجر سريع">
-                    🔪
-                    <div class="weapon-name">خنجر</div>
-                </div>
-                <div class="weapon-slot" data-weapon="pistol" title="المسدس">
+                <div class="weapon-slot" data-weapon="pistol">
                     🔫
                     <div class="weapon-name">مسدس</div>
                     <div class="ammo-count" id="pistolAmmo">30</div>
                 </div>
-                <div class="weapon-slot locked" data-weapon="shotgun" title="بندقية الصيد">
+                <div class="weapon-slot" data-weapon="shotgun">
                     💥
                     <div class="weapon-name">صيد</div>
+                    <div class="ammo-count" id="shotgunAmmo">12</div>
                 </div>
-                <div class="weapon-slot locked" data-weapon="rifle" title="بندقية القنص">
+                <div class="weapon-slot" data-weapon="rifle">
                     🎯
                     <div class="weapon-name">قنص</div>
+                    <div class="ammo-count" id="rifleAmmo">10</div>
                 </div>
-                <div class="weapon-slot locked" data-weapon="minigun" title="رشاش سريع">
+                <div class="weapon-slot" data-weapon="minigun">
                     🔥
                     <div class="weapon-name">رشاش</div>
+                    <div class="ammo-count" id="minigunAmmo">200</div>
                 </div>
-                <div class="weapon-slot locked" data-weapon="rocket" title="قاذفة صواريخ">
+                <div class="weapon-slot" data-weapon="rocket">
                     🚀
-                    <div class="weapon-name">صواريخ</div>
-                </div>
-                <div class="weapon-slot locked" data-weapon="flamethrower" title="قاذفة لهب">
-                    🔥
-                    <div class="weapon-name">لهب</div>
-                </div>
-                <div class="weapon-slot locked" data-weapon="laser" title="بندقية ليزر">
-                    ✨
-                    <div class="weapon-name">ليزر</div>
-                </div>
-                <div class="weapon-slot locked" data-weapon="plasma" title="بندقية بلازما">
-                    ⚡
-                    <div class="weapon-name">بلازما</div>
+                    <div class="weapon-name">صاروخ</div>
+                    <div class="ammo-count" id="rocketAmmo">5</div>
                 </div>
             </div>
             
-            <!-- المتجر والمهارات -->
-            <div class="shop-container">
-                <div class="shop-toggle" id="shopToggle" title="فتح المتجر">
+            <!-- الأزرار الجانبية -->
+            <div class="side-buttons">
+                <div class="side-button" id="shopButton" title="المتجر">
                     🏪
                 </div>
-                <div class="shop-panel" id="shopPanel">
-                    <div class="shop-header">
-                        <h3 style="color: #ffd700;">🏪 متجر المحارب</h3>
-                        <div style="color: #ffd700; font-size: 20px;">
-                            💰 <span id="shopGold">1000</span>
-                        </div>
-                    </div>
-                    
-                    <div class="shop-categories">
-                        <div class="category-btn active" data-category="weapons">أسلحة</div>
-                        <div class="category-btn" data-category="upgrades">ترقيات</div>
-                        <div class="category-btn" data-category="consumables">مستهلكات</div>
-                        <div class="category-btn" data-category="special">خاص</div>
-                    </div>
-                    
-                    <div class="shop-items">
-                        <!-- سيتم ملء العناصر ديناميكياً -->
-                    </div>
+                <div class="side-button" id="skillsButton" title="المهارات">
+                    🎯
+                </div>
+                <div class="side-button" id="inventoryButton" title="المخزون">
+                    🎒
                 </div>
             </div>
             
-            <!-- نافذة المهارات -->
-            <div class="skills-panel" id="skillsPanel">
-                <h3 style="color: #4169e1; margin-bottom: 15px;">🎯 شجرة المهارات</h3>
-                <div class="skill-tree">
-                    <div class="skill-node" data-skill="doubleJump">
-                        <div style="font-weight: bold; color: #4169e1;">القفز المزدوج</div>
-                        <div style="font-size: 12px; color: #aaa;">القفز مرتين في الهواء</div>
-                    </div>
-                    <div class="skill-node" data-skill="criticalHit">
-                        <div style="font-weight: bold; color: #4169e1;">ضربة حرجة</div>
-                        <div style="font-size: 12px; color: #aaa;">+20% فرصة ضربة حرجة</div>
-                    </div>
-                    <div class="skill-node" data-skill="lifeSteal">
-                        <div style="font-weight: bold; color: #4169e1;">امتصاص الحياة</div>
-                        <div style="font-size: 12px; color: #aaa;">استعادة 10% من الضرر</div>
-                    </div>
-                </div>
+            <!-- تأثيرات الشاشة -->
+            <div class="screen-effect">
+                <div class="hit-flash" id="hitFlash"></div>
+                <div class="heal-flash" id="healFlash"></div>
             </div>
-            
-            <!-- تأثيرات الجرافيكس -->
-            <div class="damage-overlay" id="damageOverlay"></div>
-            
-            <!-- رسائل التلميح -->
-            <div class="hint-message" id="hintMessage">
-                🎮 اضغط على الأزرار حولك للتحكم!
-            </div>
-            
-            <!-- شاشة الإنجازات -->
-            <div class="achievement-popup" id="achievementPopup">
-                <div style="font-size: 32px;">🏆</div>
-                <div>
-                    <div style="font-weight: bold; color: #ffd700;" id="achievementTitle"></div>
-                    <div style="font-size: 12px; color: #ffd700;" id="achievementDesc"></div>
-                </div>
+        </div>
+        
+        <!-- نوافذ -->
+        <div class="popup-window" id="shopWindow">
+            <h3 style="color: #ffd700; text-align: center; margin-bottom: 20px;">🏪 متجر المحارب</h3>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <!-- سيتم ملؤها ديناميكياً -->
             </div>
         </div>
     </div>
 
-    <!-- النظام الصوتي -->
-    <audio id="bgMusic" loop preload="auto" style="display: none;"></audio>
-    <audio id="swordSound" preload="auto" style="display: none;"></audio>
-    <audio id="gunSound" preload="auto" style="display: none;"></audio>
-    <audio id="hitSound" preload="auto" style="display: none;"></audio>
-    <audio id="explosionSound" preload="auto" style="display: none;"></audio>
-    <audio id="healSound" preload="auto" style="display: none;"></audio>
-    <audio id="coinSound" preload="auto" style="display: none;"></audio>
-    <audio id="levelUpSound" preload="auto" style="display: none;"></audio>
+    <!-- نظام الصوت -->
+    <audio id="bgMusic" loop style="display: none;"></audio>
 
     <script>
-        // ============= تهيئة اللعبة =============
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const gameScreen = document.getElementById('gameScreen');
+        // ============= نظام التحميل الذكي =============
         const loadingScreen = document.getElementById('loadingScreen');
+        const gameScreen = document.getElementById('gameScreen');
         const loaderFill = document.getElementById('loaderFill');
         const loadingText = document.getElementById('loadingText');
         
-        // متغيرات النظام
-        let gameLoaded = false;
-        let loadingProgress = 0;
-        let totalAssets = 10;
+        const graphicsStat = document.getElementById('graphicsStat');
+        const controlsStat = document.getElementById('controlsStat');
+        const weaponsStat = document.getElementById('weaponsStat');
+        const enemiesStat = document.getElementById('enemiesStat');
+        
+        let totalAssets = 100;
         let loadedAssets = 0;
+        let gameLoaded = false;
         
-        // تحجيم الكانفاس
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            if (camera) camera.updateBounds();
-            if (player) player.updateControlPosition();
-        }
-        
-        // تحديث شاشة التحميل
-        function updateLoading(progress, text) {
-            loadingProgress = progress;
+        function updateLoading(progress, text, stats) {
             loaderFill.style.width = `${progress}%`;
             loadingText.textContent = text;
             
+            if (stats) {
+                if (stats.graphics !== undefined) graphicsStat.textContent = `${stats.graphics}%`;
+                if (stats.controls !== undefined) controlsStat.textContent = `${stats.controls}%`;
+                if (stats.weapons !== undefined) weaponsStat.textContent = `${stats.weapons}%`;
+                if (stats.enemies !== undefined) enemiesStat.textContent = `${stats.enemies}%`;
+            }
+            
             if (progress >= 100 && !gameLoaded) {
+                gameLoaded = true;
                 setTimeout(() => {
                     loadingScreen.style.opacity = '0';
                     setTimeout(() => {
                         loadingScreen.style.display = 'none';
                         gameScreen.style.display = 'block';
-                        gameLoaded = true;
                         initGame();
                     }, 500);
-                }, 500);
+                }, 1000);
             }
         }
         
-        // محاكاة تحميل الأصول
         function simulateLoading() {
-            const loadingSteps = [
-                {progress: 10, text: "جاري تهيئة المحرك الرسومي..."},
-                {progress: 25, text: "تحميل النماذج ثلاثية الأبعاد..."},
-                {progress: 40, text: "تحميل أنظمة الجسيمات..."},
-                {progress: 55, text: "تهيئة النظام الصوتي..."},
-                {progress: 70, text: "تحميل أصول الأسلحة..."},
-                {progress: 85, text: "تهيئة الذكاء الاصطناعي..."},
-                {progress: 95, text: "إعداد عالم اللعبة..."},
-                {progress: 100, text: "جاهز للعب!"}
+            const steps = [
+                {time: 500, progress: 10, text: "🚀 تشغيل محرك الرسوميات...", stats: {graphics: 10}},
+                {time: 1000, progress: 25, text: "🎨 تحميل النماذج ثلاثية الأبعاد...", stats: {graphics: 40}},
+                {time: 1500, progress: 40, text: "⚙️ تهيئة أنظمة الجسيمات...", stats: {graphics: 65}},
+                {time: 2000, progress: 55, text: "🎮 إعداد نظام التحكم...", stats: {controls: 70, graphics: 80}},
+                {time: 2500, progress: 65, text: "🔫 تحميل أصول الأسلحة...", stats: {weapons: 40, graphics: 90}},
+                {time: 3000, progress: 75, text: "👾 توليد نماذج الأعداء...", stats: {enemies: 50, weapons: 70}},
+                {time: 3500, progress: 85, text: "🎵 تهيئة النظام الصوتي...", stats: {controls: 90, enemies: 80}},
+                {time: 4000, progress: 95, text: "✨ تطبيق التأثيرات البصرية...", stats: {graphics: 100, weapons: 100}},
+                {time: 4500, progress: 100, text: "✅ جاهز للمعركة!", stats: {controls: 100, enemies: 100}}
             ];
             
-            loadingSteps.forEach((step, index) => {
+            steps.forEach(step => {
                 setTimeout(() => {
-                    updateLoading(step.progress, step.text);
-                }, index * 500);
+                    updateLoading(step.progress, step.text, step.stats);
+                }, step.time);
             });
         }
         
-        // بدء تحميل اللعبة
-        setTimeout(simulateLoading, 1000);
+        // بدء التحميل
+        setTimeout(simulateLoading, 500);
         
-        // ============= نظام الجسيمات المتقدم =============
-        class AdvancedParticleSystem {
+        // ============= النظام الرئيسي =============
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // تحسين جودة الرسم
+        canvas.width = 1920;
+        canvas.height = 1080;
+        
+        // تمكين الأنظمة المتقدمة
+        ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;
+        
+        // ============= نظام الكاميرا الذكية =============
+        class SmartCamera {
+            constructor() {
+                this.x = 0;
+                this.y = 0;
+                this.zoom = 2; // تكبير عالي للرؤية الواضحة
+                this.target = null;
+                this.smoothness = 0.08; // سلاسة عالية
+                this.shake = 0;
+                this.bounds = {
+                    minX: -500,
+                    maxX: 2500,
+                    minY: -300,
+                    maxY: 1200
+                };
+                this.effects = [];
+                this.offsetX = 0;
+                this.offsetY = 0;
+            }
+            
+            follow(target) {
+                this.target = target;
+            }
+            
+            update() {
+                if (!this.target) return;
+                
+                // حساب الموضع المستهدف مع إزاحة لجعل اللاعب في وسط الشاشة
+                const targetX = this.target.x - (window.innerWidth / 2) / this.zoom + this.offsetX;
+                const targetY = this.target.y - (window.innerHeight / 2) / this.zoom + this.offsetY;
+                
+                // تطبيق الحدود
+                const boundedX = Math.max(this.bounds.minX, Math.min(this.bounds.maxX, targetX));
+                const boundedY = Math.max(this.bounds.minY, Math.min(this.bounds.maxY, targetY));
+                
+                // الحركة السلسة
+                this.x += (boundedX - this.x) * this.smoothness;
+                this.y += (boundedY - this.y) * this.smoothness;
+                
+                // تأثير الاهتزاز
+                if (this.shake > 0) {
+                    this.x += (Math.random() - 0.5) * this.shake;
+                    this.y += (Math.random() - 0.5) * this.shake;
+                    this.shake *= 0.85;
+                    if (this.shake < 0.1) this.shake = 0;
+                }
+                
+                // تحديث التأثيرات
+                this.updateEffects();
+            }
+            
+            updateEffects() {
+                this.effects = this.effects.filter(effect => {
+                    effect.time--;
+                    return effect.time > 0;
+                });
+            }
+            
+            apply() {
+                ctx.save();
+                
+                // تطبيق التكبير والتحويل
+                ctx.scale(this.zoom, this.zoom);
+                ctx.translate(-this.x, -this.y);
+                
+                // تطبيق التأثيرات
+                this.effects.forEach(effect => {
+                    if (effect.type === 'blur') {
+                        ctx.filter = `blur(${effect.amount}px)`;
+                    }
+                });
+            }
+            
+            reset() {
+                ctx.restore();
+                ctx.filter = 'none';
+            }
+            
+            addShake(intensity) {
+                this.shake = Math.max(this.shake, intensity);
+            }
+            
+            addEffect(type, amount, duration) {
+                this.effects.push({ type, amount, time: duration });
+            }
+            
+            screenToWorld(x, y) {
+                return {
+                    x: (x / this.zoom) + this.x,
+                    y: (y / this.zoom) + this.y
+                };
+            }
+            
+            worldToScreen(x, y) {
+                return {
+                    x: (x - this.x) * this.zoom,
+                    y: (y - this.y) * this.zoom
+                };
+            }
+            
+            centerOn(x, y) {
+                this.x = x - (window.innerWidth / 2) / this.zoom;
+                this.y = y - (window.innerHeight / 2) / this.zoom;
+            }
+        }
+        
+        // ============= نظام الجسيمات فائقة الجودة =============
+        class UltraParticleSystem {
             constructor() {
                 this.particles = [];
                 this.emitters = [];
             }
             
             createEffect(type, x, y, options = {}) {
-                const {
-                    color = '#ff0000',
-                    count = 15,
-                    size = 4,
-                    lifetime = 1,
-                    velocity = 8,
-                    gravity = 0.2
-                } = options;
+                const config = {
+                    count: options.count || 20,
+                    color: options.color || '#ff0000',
+                    size: options.size || 6,
+                    speed: options.speed || 8,
+                    life: options.life || 1.5,
+                    gravity: options.gravity || 0.3,
+                    spread: options.spread || 1
+                };
                 
-                for (let i = 0; i < count; i++) {
+                for (let i = 0; i < config.count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * config.speed * config.spread;
+                    
                     const particle = {
                         x, y,
-                        vx: (Math.random() - 0.5) * velocity * 2,
-                        vy: (Math.random() - 0.5) * velocity - 3,
-                        life: lifetime,
-                        maxLife: lifetime,
-                        color,
-                        size: Math.random() * size + size/2,
+                        vx: Math.cos(angle) * velocity,
+                        vy: Math.sin(angle) * velocity - 2,
+                        life: config.life,
+                        maxLife: config.life,
+                        size: Math.random() * config.size + config.size/2,
+                        color: config.color,
                         type,
                         rotation: Math.random() * Math.PI * 2,
-                        rotationSpeed: (Math.random() - 0.5) * 0.1,
-                        gravity,
-                        trail: []
+                        rotationSpeed: (Math.random() - 0.5) * 0.2,
+                        gravity: config.gravity,
+                        trail: [],
+                        glow: Math.random() > 0.5
                     };
                     
                     if (type === 'blood') {
                         particle.color = '#ff0000';
-                        particle.vy -= 2;
-                        particle.gravity = 0.3;
+                        particle.gravity = 0.4;
+                        particle.size *= 1.2;
                     } else if (type === 'spark') {
-                        particle.color = color;
-                        particle.vx *= 0.5;
-                        particle.vy *= 0.5;
-                        particle.life *= 0.5;
-                    } else if (type === 'heal') {
-                        particle.color = '#00ff00';
-                        particle.vy = -Math.random() * 4 - 2;
+                        particle.color = config.color || '#ffff00';
+                        particle.life *= 0.7;
+                        particle.glow = true;
                     } else if (type === 'magic') {
-                        particle.color = '#9370db';
+                        particle.color = config.color || '#9370db';
                         particle.size *= 1.5;
                         particle.rotationSpeed *= 2;
+                        particle.glow = true;
                     }
                     
                     this.particles.push(particle);
-                }
-            }
-            
-            createTrail(x, y, color, size = 2) {
-                for (let i = 0; i < 2; i++) {
-                    this.particles.push({
-                        x: x + (Math.random() - 0.5) * 10,
-                        y: y + (Math.random() - 0.5) * 10,
-                        vx: (Math.random() - 0.5) * 2,
-                        vy: (Math.random() - 0.5) * 2,
-                        life: 0.3,
-                        maxLife: 0.3,
-                        color,
-                        size: Math.random() * size + 1,
-                        type: 'trail',
-                        rotation: 0,
-                        rotationSpeed: 0,
-                        gravity: 0,
-                        trail: []
-                    });
                 }
             }
             
@@ -1161,9 +936,9 @@
                     p.rotation += p.rotationSpeed;
                     p.life -= 0.02;
                     
-                    // إضافة إلى الأثر
-                    p.trail.push({x: p.x, y: p.y});
-                    if (p.trail.length > 5) p.trail.shift();
+                    // إضافة أثر
+                    p.trail.push({x: p.x, y: p.y, size: p.size});
+                    if (p.trail.length > 8) p.trail.shift();
                     
                     if (p.life <= 0) {
                         this.particles.splice(i, 1);
@@ -1174,35 +949,43 @@
             draw() {
                 this.particles.forEach(p => {
                     const alpha = p.life / p.maxLife;
+                    
+                    // رسم الأثر
+                    if (p.trail.length > 1) {
+                        ctx.save();
+                        ctx.globalAlpha = alpha * 0.3;
+                        
+                        for (let i = 0; i < p.trail.length - 1; i++) {
+                            const current = p.trail[i];
+                            const next = p.trail[i + 1];
+                            const trailAlpha = i / p.trail.length;
+                            
+                            const gradient = ctx.createLinearGradient(
+                                current.x, current.y,
+                                next.x, next.y
+                            );
+                            gradient.addColorStop(0, `${p.color}${Math.floor(trailAlpha * 255).toString(16).padStart(2, '0')}`);
+                            gradient.addColorStop(1, `${p.color}00`);
+                            
+                            ctx.strokeStyle = gradient;
+                            ctx.lineWidth = current.size * trailAlpha;
+                            ctx.lineCap = 'round';
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(current.x, current.y);
+                            ctx.lineTo(next.x, next.y);
+                            ctx.stroke();
+                        }
+                        
+                        ctx.restore();
+                    }
+                    
+                    // رسم الجسيم
                     ctx.save();
                     ctx.globalAlpha = alpha;
                     
-                    if (p.type === 'magic') {
-                        // جسيمات سحرية متوهجة
-                        ctx.fillStyle = p.color;
-                        ctx.translate(p.x, p.y);
-                        ctx.rotate(p.rotation);
-                        
-                        // نجمة سداسية
-                        ctx.beginPath();
-                        for (let i = 0; i < 6; i++) {
-                            const angle = (i * Math.PI) / 3;
-                            const radius = p.size;
-                            ctx.lineTo(
-                                Math.cos(angle) * radius,
-                                Math.sin(angle) * radius
-                            );
-                        }
-                        ctx.closePath();
-                        ctx.fill();
-                        
-                        // هالة
-                        ctx.globalAlpha = alpha * 0.3;
-                        ctx.beginPath();
-                        ctx.arc(0, 0, p.size * 2, 0, Math.PI * 2);
-                        ctx.fill();
-                    } else if (p.type === 'spark') {
-                        // شرارة متوهجة
+                    if (p.glow) {
+                        // تأثير التوهج
                         const gradient = ctx.createRadialGradient(
                             p.x, p.y, 0,
                             p.x, p.y, p.size * 2
@@ -1214,26 +997,29 @@
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
                         ctx.fill();
-                    } else {
-                        // جسيمات عادية مع أثر
-                        if (p.trail.length > 1) {
-                            ctx.strokeStyle = p.color;
-                            ctx.lineWidth = p.size;
-                            ctx.lineCap = 'round';
-                            ctx.globalAlpha = alpha * 0.3;
-                            
-                            ctx.beginPath();
-                            ctx.moveTo(p.trail[0].x, p.trail[0].y);
-                            for (let j = 1; j < p.trail.length; j++) {
-                                ctx.lineTo(p.trail[j].x, p.trail[j].y);
-                            }
-                            ctx.stroke();
-                        }
-                        
-                        ctx.globalAlpha = alpha;
-                        ctx.fillStyle = p.color;
+                    }
+                    
+                    // الجسم الرئيسي
+                    ctx.fillStyle = p.color;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation);
+                    
+                    if (p.type === 'magic') {
+                        // نجمة سداسية
                         ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI) / 3;
+                            ctx.lineTo(
+                                Math.cos(angle) * p.size,
+                                Math.sin(angle) * p.size
+                            );
+                        }
+                        ctx.closePath();
+                        ctx.fill();
+                    } else {
+                        // دائرة
+                        ctx.beginPath();
+                        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
                         ctx.fill();
                     }
                     
@@ -1242,208 +1028,26 @@
             }
         }
         
-        // ============= نظام الكاميرا المتقدم =============
-        class AdvancedCamera {
+        // ============= اللاعب - جرافيكس فائقة الجودة =============
+        class UltraPlayer {
             constructor() {
-                this.x = 0;
-                this.y = 0;
-                this.target = null;
-                this.shake = 0;
-                this.zoom = 1;
-                this.rotation = 0;
-                this.bounds = {
-                    left: 0,
-                    right: canvas.width,
-                    top: 0,
-                    bottom: canvas.height
-                };
-                this.smoothing = 0.08;
-                this.effects = [];
-            }
-            
-            follow(target) {
-                this.target = target;
-            }
-            
-            updateBounds() {
-                this.bounds.right = canvas.width;
-                this.bounds.bottom = canvas.height;
-            }
-            
-            update() {
-                if (this.target) {
-                    // تتبع سلس مع حدود
-                    const targetX = Math.max(
-                        this.bounds.left + canvas.width / 2,
-                        Math.min(this.bounds.right - canvas.width / 2, this.target.x)
-                    );
-                    const targetY = Math.max(
-                        this.bounds.top + canvas.height / 2,
-                        Math.min(this.bounds.bottom - canvas.height / 2, this.target.y)
-                    );
-                    
-                    this.x += (targetX - canvas.width / 2 - this.x) * this.smoothing;
-                    this.y += (targetY - canvas.height / 2 - this.y) * this.smoothing;
-                }
-                
-                // تأثيرات الاهتزاز
-                if (this.shake > 0) {
-                    this.x += (Math.random() - 0.5) * this.shake * 2;
-                    this.y += (Math.random() - 0.5) * this.shake * 2;
-                    this.shake *= 0.85;
-                    if (this.shake < 0.1) this.shake = 0;
-                }
-                
-                // تحديث التأثيرات
-                this.effects = this.effects.filter(effect => {
-                    effect.duration--;
-                    return effect.duration > 0;
-                });
-            }
-            
-            apply() {
-                ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.scale(this.zoom, this.zoom);
-                ctx.rotate(this.rotation);
-                ctx.translate(-this.x, -this.y);
-                
-                // تطبيق تأثيرات ما بعد المعالجة
-                this.effects.forEach(effect => {
-                    if (effect.type === 'blur') {
-                        ctx.filter = `blur(${effect.amount}px)`;
-                    }
-                });
-            }
-            
-            reset() {
-                ctx.restore();
-                ctx.filter = 'none';
-            }
-            
-            addShake(amount) {
-                this.shake = Math.max(this.shake, amount);
-            }
-            
-            addEffect(type, amount, duration) {
-                this.effects.push({ type, amount, duration });
-            }
-            
-            zoomTo(target, duration = 60) {
-                const startZoom = this.zoom;
-                const zoomDiff = target - startZoom;
-                let frames = 0;
-                
-                const zoomStep = () => {
-                    frames++;
-                    const progress = frames / duration;
-                    this.zoom = startZoom + zoomDiff * Math.sin(progress * Math.PI / 2);
-                    
-                    if (frames < duration) {
-                        requestAnimationFrame(zoomStep);
-                    }
-                };
-                zoomStep();
-            }
-        }
-        
-        // ============= نظام الرسوم المتحركة للأرجل =============
-        class LegAnimationSystem {
-            constructor() {
-                this.legs = [];
-                this.animations = {};
-            }
-            
-            createLegsForEntity(entity, count = 2) {
-                for (let i = 0; i < count; i++) {
-                    this.legs.push({
-                        entity,
-                        index: i,
-                        angle: 0,
-                        length: entity.height * 0.6,
-                        thickness: entity.width * 0.15,
-                        offsetX: (i - 0.5) * entity.width * 0.4,
-                        swing: 0,
-                        swingSpeed: 0.1 + Math.random() * 0.1,
-                        groundContact: true
-                    });
-                }
-            }
-            
-            update(entity, velocityX, velocityY, onGround) {
-                const entityLegs = this.legs.filter(l => l.entity === entity);
-                
-                entityLegs.forEach((leg, index) => {
-                    const speed = Math.abs(velocityX) + Math.abs(velocityY);
-                    
-                    if (onGround && speed > 0.5) {
-                        leg.swing += leg.swingSpeed * speed;
-                        leg.angle = Math.sin(leg.swing) * (Math.PI / 6) * (index % 2 === 0 ? 1 : -1);
-                    } else {
-                        leg.angle = 0;
-                    }
-                    
-                    leg.groundContact = onGround;
-                });
-            }
-            
-            draw(entity) {
-                const entityLegs = this.legs.filter(l => l.entity === entity);
-                
-                entityLegs.forEach(leg => {
-                    const x = entity.x + leg.offsetX;
-                    const y = entity.y + entity.height;
-                    
-                    ctx.save();
-                    ctx.translate(x, y);
-                    ctx.rotate(leg.angle);
-                    
-                    // رسم الساق
-                    ctx.fillStyle = entity.color || '#8b4513';
-                    ctx.fillRect(
-                        -leg.thickness / 2,
-                        0,
-                        leg.thickness,
-                        leg.length
-                    );
-                    
-                    // القدم إذا كانت على الأرض
-                    if (leg.groundContact) {
-                        ctx.fillStyle = '#654321';
-                        ctx.fillRect(
-                            -leg.thickness * 1.2 / 2,
-                            leg.length - leg.thickness / 2,
-                            leg.thickness * 1.2,
-                            leg.thickness
-                        );
-                    }
-                    
-                    ctx.restore();
-                });
-            }
-        }
-        
-        // ============= اللاعب المحسن برسومات الأرجل =============
-        class EnhancedPlayer {
-            constructor() {
+                // الموضع والقياسات
                 this.x = canvas.width / 2;
-                this.y = canvas.height - 200;
-                this.width = 50;
-                this.height = 80;
-                this.speed = 10;
-                this.jumpPower = 20;
-                this.dashPower = 25;
+                this.y = canvas.height - 300;
+                this.width = 35;
+                this.height = 70;
+                
+                // الحركة
+                this.speed = 8;
+                this.jumpPower = 22;
+                this.dashPower = 30;
                 this.velocityX = 0;
                 this.velocityY = 0;
                 this.gravity = 0.8;
                 this.isJumping = false;
                 this.isDashing = false;
                 this.dashCooldown = 0;
-                this.onGround = false;
-                
-                // نظام الرسوم المتحركة للأرجل
-                this.legSystem = new LegAnimationSystem();
-                this.legSystem.createLegsForEntity(this, 2);
+                this.onGround = true;
                 
                 // الإحصائيات
                 this.health = 100;
@@ -1456,125 +1060,64 @@
                 this.exp = 0;
                 this.maxExp = 100;
                 
-                // الأسلحة المتقدمة (10 أسلحة)
+                // الأسلحة
                 this.weapon = 'sword';
                 this.weapons = {
                     sword: { 
                         name: "سيف فولاذي", 
-                        damage: 30, 
-                        range: 60, 
+                        damage: 35, 
+                        range: 65, 
                         cooldown: 400, 
                         unlocked: true,
                         ammo: Infinity,
-                        color: '#ffd700',
-                        effect: 'slash'
-                    },
-                    dagger: { 
-                        name: "خنجر سريع", 
-                        damage: 20, 
-                        range: 40, 
-                        cooldown: 200, 
-                        unlocked: true,
-                        ammo: Infinity,
-                        color: '#c0c0c0',
-                        effect: 'stab'
+                        color: '#ffd700'
                     },
                     pistol: { 
-                        name: "مسدس عادي", 
-                        damage: 25, 
-                        range: 300, 
+                        name: "مسدس عالي الدقة", 
+                        damage: 30, 
+                        range: 350, 
                         cooldown: 300, 
                         unlocked: true,
                         ammo: 30,
-                        color: '#ffff00',
-                        effect: 'bullet'
+                        color: '#ffff00'
                     },
                     shotgun: { 
-                        name: "بندقية صيد", 
-                        damage: 40, 
-                        range: 150, 
+                        name: "بندقية الصيد", 
+                        damage: 45, 
+                        range: 180, 
                         cooldown: 800, 
-                        unlocked: false,
+                        unlocked: true,
                         ammo: 12,
-                        color: '#ff4500',
-                        effect: 'shotgun'
+                        color: '#ff4500'
                     },
                     rifle: { 
-                        name: "بندقية قنص", 
-                        damage: 60, 
-                        range: 500, 
+                        name: "بندقية القنص", 
+                        damage: 70, 
+                        range: 600, 
                         cooldown: 1000, 
-                        unlocked: false,
+                        unlocked: true,
                         ammo: 10,
-                        color: '#00ffff',
-                        effect: 'sniper'
+                        color: '#00ffff'
                     },
                     minigun: { 
-                        name: "رشاش سريع", 
-                        damage: 15, 
-                        range: 200, 
+                        name: "الرشاش السريع", 
+                        damage: 20, 
+                        range: 250, 
                         cooldown: 100, 
-                        unlocked: false,
+                        unlocked: true,
                         ammo: 200,
-                        color: '#ff0000',
-                        effect: 'minigun'
+                        color: '#ff0000'
                     },
                     rocket: { 
-                        name: "قاذفة صواريخ", 
-                        damage: 100, 
-                        range: 400, 
+                        name: "قاذفة الصواريخ", 
+                        damage: 120, 
+                        range: 450, 
                         cooldown: 1500, 
-                        unlocked: false,
+                        unlocked: true,
                         ammo: 5,
-                        color: '#ff8c00',
-                        effect: 'rocket'
-                    },
-                    flamethrower: { 
-                        name: "قاذفة لهب", 
-                        damage: 10, 
-                        range: 100, 
-                        cooldown: 50, 
-                        unlocked: false,
-                        ammo: 100,
-                        color: '#ff4500',
-                        effect: 'flame'
-                    },
-                    laser: { 
-                        name: "بندقية ليزر", 
-                        damage: 45, 
-                        range: 350, 
-                        cooldown: 500, 
-                        unlocked: false,
-                        ammo: 30,
-                        color: '#9370db',
-                        effect: 'laser'
-                    },
-                    plasma: { 
-                        name: "بندقية بلازما", 
-                        damage: 75, 
-                        range: 250, 
-                        cooldown: 600, 
-                        unlocked: false,
-                        ammo: 20,
-                        color: '#00ff00',
-                        effect: 'plasma'
+                        color: '#ff8c00'
                     }
                 };
-                
-                // المهارات
-                this.skills = {
-                    doubleJump: false,
-                    criticalHit: false,
-                    lifeSteal: false,
-                    dashAttack: false,
-                    bulletTime: false
-                };
-                
-                // الموارد
-                this.gold = 1000;
-                this.gems = 0;
-                this.score = 0;
-                this.kills = 0;
                 
                 // الحالة
                 this.isBlocking = false;
@@ -1583,20 +1126,28 @@
                 this.lastComboTime = 0;
                 this.lastAttack = 0;
                 this.attackAnimation = 0;
+                this.walkAnimation = 0;
+                
+                // الموارد
+                this.gold = 1000;
+                this.score = 0;
+                this.kills = 0;
+                
+                // الرسوم المتحركة
+                this.legAngle = 0;
+                this.armAngle = 0;
+                this.bobOffset = 0;
             }
             
             update() {
-                // الحركة
-                let moveX = 0;
-                let moveY = 0;
+                // الحركة الأساسية
+                this.velocityX = 0;
+                this.velocityY = 0;
                 
-                if (keys.moveLeft && this.x > 100) moveX -= this.speed;
-                if (keys.moveRight && this.x < canvas.width - 100) moveX += this.speed;
-                if (keys.moveUp && this.y > 100) moveY -= this.speed;
-                if (keys.moveDown && this.y < canvas.height - 150) moveY += this.speed;
-                
-                this.velocityX = moveX;
-                this.velocityY = moveY;
+                if (keys.moveLeft) this.velocityX = -this.speed;
+                if (keys.moveRight) this.velocityX = this.speed;
+                if (keys.moveUp) this.velocityY = -this.speed;
+                if (keys.moveDown) this.velocityY = this.speed;
                 
                 // القفز
                 if (keys.jump && !this.isJumping && this.stamina >= 20) {
@@ -1604,7 +1155,11 @@
                     this.isJumping = true;
                     this.onGround = false;
                     this.stamina -= 20;
-                    particles.createEffect('spark', this.x, this.y + this.height, '#ffff00', 10);
+                    particles.createEffect('spark', this.x, this.y + this.height, '#ffff00', {
+                        count: 15,
+                        size: 4,
+                        speed: 6
+                    });
                 }
                 
                 // الدفعة السريعة
@@ -1613,11 +1168,15 @@
                     this.dashCooldown = 60;
                     this.stamina -= 30;
                     
-                    const dashMultiplier = 5;
-                    this.x += moveX * this.dashPower * dashMultiplier;
-                    this.y += moveY * this.dashPower * 3;
+                    const dashMultiplier = 6;
+                    this.x += this.velocityX * dashMultiplier;
+                    this.y += this.velocityY * dashMultiplier * 0.7;
                     
-                    particles.createEffect('spark', this.x, this.y, '#00ffff', 20);
+                    particles.createEffect('spark', this.x, this.y, '#00ffff', {
+                        count: 25,
+                        size: 5,
+                        speed: 10
+                    });
                 }
                 
                 // الجاذبية والحركة
@@ -1628,8 +1187,8 @@
                 this.x += this.velocityX;
                 this.y += this.velocityY;
                 
-                // التحقق من الأرض
-                const groundLevel = canvas.height - 150;
+                // حدود الأرض
+                const groundLevel = canvas.height - 200;
                 if (this.y > groundLevel - this.height) {
                     this.y = groundLevel - this.height;
                     this.velocityY = 0;
@@ -1639,14 +1198,14 @@
                     this.onGround = false;
                 }
                 
-                // تحديث توقيتات
+                // تحديث التوقيتات
                 if (this.dashCooldown > 0) this.dashCooldown--;
                 if (this.invincible > 0) this.invincible--;
                 if (this.attackAnimation > 0) this.attackAnimation--;
                 
                 // استعادة الطاقة
                 if (!this.isJumping && !this.isDashing) {
-                    this.stamina = Math.min(this.maxStamina, this.stamina + 0.8);
+                    this.stamina = Math.min(this.maxStamina, this.stamina + 1);
                 }
                 
                 // الدفاع
@@ -1655,39 +1214,48 @@
                     this.stamina -= 2;
                 }
                 
-                // تحديث رسوميات الأرجل
-                this.legSystem.update(this, this.velocityX, this.velocityY, this.onGround);
+                // تحديث الرسوم المتحركة
+                this.updateAnimations();
                 
                 // تحديث الواجهة
                 this.updateUI();
+            }
+            
+            updateAnimations() {
+                // حركة المشي
+                if (Math.abs(this.velocityX) > 0 || Math.abs(this.velocityY) > 0) {
+                    this.walkAnimation += 0.2;
+                    this.bobOffset = Math.sin(this.walkAnimation) * 3;
+                    this.legAngle = Math.sin(this.walkAnimation * 2) * 0.3;
+                } else {
+                    this.bobOffset = 0;
+                    this.legAngle = 0;
+                }
+                
+                // حركة الذراع
+                if (this.attackAnimation > 0) {
+                    this.armAngle = Math.sin(this.attackAnimation * 0.5) * 0.5;
+                } else {
+                    this.armAngle = 0;
+                }
             }
             
             attack(enemies) {
                 const now = Date.now();
                 const weaponData = this.weapons[this.weapon];
                 
-                if (!weaponData.unlocked) {
-                    showHint(`🔒 هذا السلاح غير متاح!`);
-                    return;
-                }
-                
+                if (!weaponData.unlocked) return;
                 if (now - this.lastAttack < weaponData.cooldown) return;
-                if (weaponData.ammo <= 0 && weaponData.ammo !== Infinity) {
-                    showHint(`💥 نفذت الذخيرة!`);
-                    return;
-                }
+                if (weaponData.ammo <= 0 && weaponData.ammo !== Infinity) return;
                 
                 this.lastAttack = now;
-                this.attackAnimation = 10;
+                this.attackAnimation = 15;
                 
                 // استخدام الذخيرة
                 if (weaponData.ammo !== Infinity) {
                     weaponData.ammo--;
                     updateAmmoUI();
                 }
-                
-                // تشغيل الصوت
-                playSound(this.weapon);
                 
                 // الكومبو
                 if (now - this.lastComboTime < 2000) {
@@ -1697,78 +1265,92 @@
                 }
                 this.lastComboTime = now;
                 
-                // حساب الضرر
+                // تنفيذ الهجوم
                 let damage = weaponData.damage;
-                if (this.skills.criticalHit && Math.random() < 0.2) {
-                    damage *= 2;
-                    createHitIndicator(this.x, this.y, 'CRITICAL!', '#ff0000');
+                if (this.combo > 3) {
+                    damage *= (1 + (this.combo - 3) * 0.1);
                 }
                 
-                // امتصاص الحياة
-                if (this.skills.lifeSteal) {
-                    this.heal(damage * 0.1);
-                }
-                
-                // تنفيذ الهجوم حسب نوع السلاح
                 switch(this.weapon) {
                     case 'sword':
-                    case 'dagger':
-                        this.meleeAttack(enemies, damage, weaponData);
+                        this.swingSword(enemies, damage, weaponData);
                         break;
                     default:
-                        this.rangedAttack(damage, weaponData);
+                        this.shootWeapon(damage, weaponData);
                         break;
                 }
                 
-                camera.addShake(weaponData.name.includes('صاروخ') ? 8 : 2);
+                // اهتزاز الكاميرا
+                camera.addShake(this.weapon === 'rocket' ? 8 : 
+                               this.weapon === 'shotgun' ? 5 : 2);
             }
             
-            meleeAttack(enemies, damage, weaponData) {
+            swingSword(enemies, damage, weaponData) {
+                const swingRadius = weaponData.range;
+                const swingAngle = this.attackAnimation * 0.2;
+                
+                // تأثيرات بصرية
                 particles.createEffect('spark', 
-                    this.x + this.width, 
-                    this.y + 40, 
-                    weaponData.color, 
-                    15
+                    this.x + Math.cos(swingAngle) * swingRadius,
+                    this.y + Math.sin(swingAngle) * swingRadius,
+                    weaponData.color,
+                    { count: 10, size: 4, speed: 6 }
                 );
                 
+                // البحث عن أعداء في نطاق السيف
                 enemies.forEach(enemy => {
-                    const distX = Math.abs(enemy.x - this.x);
-                    const distY = Math.abs(enemy.y - this.y);
+                    const dx = enemy.x - this.x;
+                    const dy = enemy.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    if (distX < weaponData.range && distY < 50) {
-                        const killed = enemy.takeDamage(damage, this);
-                        if (killed) {
-                            this.combo += 2;
-                            particles.createEffect('blood', enemy.x, enemy.y, '#ff0000', 25);
+                    if (distance < swingRadius) {
+                        const angleToEnemy = Math.atan2(dy, dx);
+                        const angleDiff = Math.abs(angleToEnemy - swingAngle);
+                        
+                        if (angleDiff < 0.5) { // 30 درجة
+                            const killed = enemy.takeDamage(damage, this);
+                            if (killed) {
+                                this.combo += 2;
+                                particles.createEffect('blood', enemy.x, enemy.y, '#ff0000', {
+                                    count: 20,
+                                    size: 6,
+                                    speed: 8
+                                });
+                            }
                         }
                     }
                 });
             }
             
-            rangedAttack(damage, weaponData) {
-                const bulletCount = weaponData.effect === 'shotgun' ? 8 : 
-                                  weaponData.effect === 'minigun' ? 3 : 1;
-                const spread = weaponData.effect === 'shotgun' ? 0.3 : 
-                              weaponData.effect === 'minigun' ? 0.15 : 0.05;
+            shootWeapon(damage, weaponData) {
+                const bulletCount = this.weapon === 'shotgun' ? 8 : 
+                                  this.weapon === 'minigun' ? 3 : 1;
+                const spread = this.weapon === 'shotgun' ? 0.25 : 
+                              this.weapon === 'minigun' ? 0.15 : 0.05;
                 
                 for (let i = 0; i < bulletCount; i++) {
-                    const bullet = new AdvancedBullet(
+                    const bullet = new UltraBullet(
                         this.x + this.width,
                         this.y + this.height / 2,
-                        15 + (weaponData.effect === 'sniper' ? 10 : 0),
-                        damage / (weaponData.effect === 'shotgun' ? 2 : 1),
+                        20 + (this.weapon === 'rifle' ? 15 : 0),
+                        damage / (this.weapon === 'shotgun' ? 2.5 : 1),
                         weaponData.color,
-                        weaponData.effect,
+                        this.weapon,
                         spread
                     );
                     bullets.push(bullet);
                 }
                 
+                // تأثيرات الإطلاق
                 particles.createEffect('spark', 
                     this.x + this.width, 
-                    this.y + 40, 
-                    weaponData.color, 
-                    weaponData.effect === 'shotgun' ? 20 : 10
+                    this.y + this.height / 2, 
+                    weaponData.color,
+                    { 
+                        count: this.weapon === 'shotgun' ? 20 : 12,
+                        size: this.weapon === 'rocket' ? 8 : 4,
+                        speed: 10
+                    }
                 );
             }
             
@@ -1779,7 +1361,11 @@
                 
                 if (this.isBlocking) {
                     actualDamage *= 0.3;
-                    particles.createEffect('spark', this.x, this.y, '#4169e1', 8);
+                    particles.createEffect('spark', this.x, this.y, '#4169e1', {
+                        count: 8,
+                        size: 3,
+                        speed: 5
+                    });
                 }
                 
                 if (this.armor > 0) {
@@ -1791,23 +1377,23 @@
                 this.health -= actualDamage;
                 
                 // تأثيرات الضرر
-                showDamageEffect(this.x, this.y);
-                camera.addShake(3);
+                showHitEffect(this.x + this.width/2, this.y + this.height/2);
+                camera.addShake(4);
+                createDamageIndicator(this.x, this.y - 30, `-${Math.round(actualDamage)}`, '#ff0000');
+                
                 particles.createEffect('blood', 
                     this.x + this.width/2, 
                     this.y + this.height/2, 
-                    '#ff0000', 
-                    10
+                    '#ff0000',
+                    { count: 12, size: 5, speed: 6 }
                 );
-                
-                createHitIndicator(this.x, this.y, `-${Math.round(actualDamage)}`, '#ff0000');
                 
                 if (this.health <= 0) {
                     gameOver();
                     return true;
                 }
                 
-                this.invincible = 15;
+                this.invincible = 20;
                 return false;
             }
             
@@ -1817,77 +1403,40 @@
                 const healed = this.health - oldHealth;
                 
                 if (healed > 0) {
-                    particles.createEffect('heal', 
+                    particles.createEffect('magic', 
                         this.x + this.width/2, 
                         this.y + this.height/2, 
-                        '#00ff00', 
-                        15
+                        '#00ff00',
+                        { count: 15, size: 4, speed: 4 }
                     );
-                    createHitIndicator(this.x, this.y, `+${Math.round(healed)}`, '#00ff00');
-                    playSound('heal');
+                    
+                    createDamageIndicator(this.x, this.y - 30, `+${Math.round(healed)}`, '#00ff00');
+                    showHealEffect(this.x + this.width/2, this.y + this.height/2);
                 }
-            }
-            
-            addExp(amount) {
-                this.exp += amount;
-                while (this.exp >= this.maxExp) {
-                    this.exp -= this.maxExp;
-                    this.levelUp();
-                }
-                updateExpUI();
-            }
-            
-            levelUp() {
-                this.level++;
-                this.maxExp = Math.floor(this.maxExp * 1.5);
-                
-                this.maxHealth += 20;
-                this.health = this.maxHealth;
-                this.maxStamina += 10;
-                this.stamina = this.maxStamina;
-                
-                playSound('levelUp');
-                showHint(`🎉 ارتقيت للمستوى ${this.level}!`);
-                
-                // منح مكافأة
-                this.gold += 500;
-                this.gems += 1;
-                
-                unlockAchievement('levelUp', `الوصول للمستوى ${this.level}`);
             }
             
             updateUI() {
-                document.getElementById('healthText').textContent = 
-                    `${Math.round(this.health)}/${this.maxHealth}`;
-                document.getElementById('armorText').textContent = 
-                    `${Math.round(this.armor)}/${this.maxArmor}`;
-                document.getElementById('staminaText').textContent = 
-                    `${Math.round(this.stamina)}/${this.maxStamina}`;
-                document.getElementById('goldText').textContent = this.gold;
-                document.getElementById('gemText').textContent = this.gems;
-                document.getElementById('scoreText').textContent = this.score;
+                // تحديث القيم
+                document.getElementById('healthValue').textContent = Math.round(this.health);
+                document.getElementById('goldValue').textContent = this.gold;
+                document.getElementById('scoreValue').textContent = this.score;
+                document.getElementById('levelValue').textContent = this.level;
                 
-                document.getElementById('healthBar').style.width = 
-                    `${(this.health / this.maxHealth) * 100}%`;
-                document.getElementById('armorBar').style.width = 
-                    `${(this.armor / this.maxArmor) * 100}%`;
-                document.getElementById('staminaBar').style.width = 
-                    `${(this.stamina / this.maxStamina) * 100}%`;
+                // تحديث شريط الصحة
+                const healthPercent = (this.health / this.maxHealth) * 100;
+                document.getElementById('healthFill').style.width = `${healthPercent}%`;
                 
-                document.getElementById('shopGold').textContent = this.gold;
-                
-                // عرض الكومبو
-                if (this.combo > 1) {
-                    document.getElementById('scoreText').textContent = 
-                        `${this.score} (x${this.combo})`;
-                }
-            }
-            
-            updateControlPosition() {
-                const controls = document.querySelector('.control-area');
-                if (controls) {
-                    controls.style.left = `${this.x}px`;
-                    controls.style.bottom = `${canvas.height - this.y}px`;
+                // تحديث لون النص بناءً على الصحة
+                const healthText = document.querySelector('.health-text');
+                if (healthPercent < 30) {
+                    healthText.style.color = '#ff0000';
+                    healthText.style.animation = 'pulse 0.5s infinite';
+                } else if (healthPercent < 60) {
+                    healthText.style.color = '#ffff00';
+                    healthText.style.animation = 'none';
+                } else {
+                    healthText.style.color = '#ffd700';
+                    healthText.style.animation = 'none';
                 }
             }
             
@@ -1899,51 +1448,198 @@
                     ctx.globalAlpha = 0.6;
                 }
                 
-                // رسم الأرجل أولاً
-                this.legSystem.draw(this);
+                // تطبيق حركة التأرجح
+                ctx.translate(0, this.bobOffset);
+                
+                // رسم الساقين
+                this.drawLegs();
                 
                 // جسم المحارب
+                this.drawBody();
+                
+                // الرأس
+                this.drawHead();
+                
+                // السلاح
+                this.drawWeapon();
+                
+                // تأثيرات خاصة
+                this.drawEffects();
+                
+                ctx.restore();
+                
+                // رسم الكومبو والمعلومات
+                this.drawHUD();
+            }
+            
+            drawLegs() {
+                // الساق اليسرى
+                ctx.save();
+                ctx.translate(this.x + this.width * 0.3, this.y + this.height);
+                ctx.rotate(this.legAngle);
+                
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(-8, 0, 16, 45);
+                
+                // القدم
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(-12, 40, 24, 10);
+                
+                ctx.restore();
+                
+                // الساق اليمنى
+                ctx.save();
+                ctx.translate(this.x + this.width * 0.7, this.y + this.height);
+                ctx.rotate(-this.legAngle);
+                
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(-8, 0, 16, 45);
+                
+                // القدم
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(-12, 40, 24, 10);
+                
+                ctx.restore();
+            }
+            
+            drawBody() {
+                // تدرج اللون للجسم
                 const gradient = ctx.createLinearGradient(
-                    this.x, this.y, 
+                    this.x, this.y,
                     this.x, this.y + this.height
                 );
                 gradient.addColorStop(0, '#dc143c');
-                gradient.addColorStop(0.5, '#b22222');
-                gradient.addColorStop(1, '#8b0000');
+                gradient.addColorStop(0.4, '#b22222');
+                gradient.addColorStop(0.7, '#8b0000');
+                gradient.addColorStop(1, '#660000');
                 
                 ctx.fillStyle = gradient;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
                 
+                // الجسم الرئيسي
+                ctx.beginPath();
+                ctx.roundRect(this.x, this.y, this.width, this.height, 10);
+                ctx.fill();
+                
+                // تفاصيل الدروع
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(this.x + 5, this.y + 10, this.width - 10, this.height - 20, 5);
+                ctx.stroke();
+            }
+            
+            drawHead() {
                 // الرأس
                 ctx.fillStyle = '#ffb6c1';
                 ctx.beginPath();
-                ctx.arc(this.x + this.width/2, this.y - 5, 15, 0, Math.PI * 2);
+                ctx.arc(this.x + this.width/2, this.y - 12, 18, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // العيون
                 ctx.fillStyle = '#000';
                 ctx.beginPath();
-                ctx.arc(this.x + this.width/2 - 8, this.y - 5, 3, 0, Math.PI * 2);
-                ctx.arc(this.x + this.width/2 + 8, this.y - 5, 3, 0, Math.PI * 2);
+                ctx.arc(this.x + this.width/2 - 7, this.y - 14, 3, 0, Math.PI * 2);
+                ctx.arc(this.x + this.width/2 + 7, this.y - 14, 3, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // الفم
                 ctx.strokeStyle = '#000';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.arc(this.x + this.width/2, this.y + 5, 6, 0.2, Math.PI - 0.2);
+                ctx.arc(this.x + this.width/2, this.y - 3, 8, 0.2, Math.PI - 0.2);
                 ctx.stroke();
                 
-                // السلاح
-                this.drawWeapon();
+                // الخوذة
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(this.x + this.width/2, this.y - 12, 22, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            drawWeapon() {
+                const weaponData = this.weapons[this.weapon];
+                ctx.save();
+                ctx.translate(this.x + this.width, this.y + this.height * 0.4);
+                ctx.rotate(this.armAngle);
                 
+                switch(this.weapon) {
+                    case 'sword':
+                        this.drawSword(weaponData);
+                        break;
+                    default:
+                        this.drawGun(weaponData);
+                        break;
+                }
+                
+                ctx.restore();
+            }
+            
+            drawSword(weaponData) {
+                // نصل السيف
+                const swordGradient = ctx.createLinearGradient(0, 0, 50, 0);
+                swordGradient.addColorStop(0, '#ffffff');
+                swordGradient.addColorStop(0.3, '#ffd700');
+                swordGradient.addColorStop(0.7, '#c0c0c0');
+                swordGradient.addColorStop(1, '#808080');
+                
+                ctx.fillStyle = swordGradient;
+                ctx.beginPath();
+                ctx.moveTo(0, -5);
+                ctx.lineTo(45, -10);
+                ctx.lineTo(40, 5);
+                ctx.lineTo(0, 10);
+                ctx.closePath();
+                ctx.fill();
+                
+                // قبضة السيف
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(-10, -8, 10, 16);
+                
+                // تأثير التوهج إذا كان في كومبو عالي
+                if (this.combo > 5) {
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 2;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#ff0000';
+                    ctx.beginPath();
+                    ctx.moveTo(0, -3);
+                    ctx.lineTo(50, -8);
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+            }
+            
+            drawGun(weaponData) {
+                // جسم السلاح
+                ctx.fillStyle = '#2f4f4f';
+                ctx.fillRect(0, -8, 30, 16);
+                
+                // السبطانة
+                ctx.fillStyle = '#696969';
+                ctx.fillRect(25, -6, 15, 12);
+                
+                // تفاصيل
+                ctx.fillStyle = weaponData.color;
+                ctx.fillRect(5, -4, 15, 8);
+                
+                // تأثير الإطلاق
+                if (this.attackAnimation > 0) {
+                    ctx.fillStyle = '#ffff00';
+                    ctx.beginPath();
+                    ctx.arc(40, 0, 5 + this.attackAnimation, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            drawEffects() {
                 // تأثير الدفاع
                 if (this.isBlocking) {
                     ctx.strokeStyle = '#4169e1';
                     ctx.lineWidth = 4;
                     ctx.globalAlpha = 0.4;
                     ctx.beginPath();
-                    ctx.arc(this.x + this.width/2, this.y + this.height/2, 60, 0, Math.PI * 2);
+                    ctx.arc(this.x + this.width/2, this.y + this.height/2, 50, 0, Math.PI * 2);
                     ctx.stroke();
                 }
                 
@@ -1953,91 +1649,53 @@
                     ctx.lineWidth = 3;
                     ctx.globalAlpha = 0.3;
                     ctx.beginPath();
-                    ctx.arc(this.x + this.width/2, this.y + this.height/2, 70, 0, Math.PI * 2);
+                    ctx.arc(this.x + this.width/2, this.y + this.height/2, 65, 0, Math.PI * 2);
                     ctx.stroke();
                 }
                 
-                // تأثير الهجوم
-                if (this.attackAnimation > 0) {
-                    ctx.strokeStyle = '#ffd700';
-                    ctx.lineWidth = 2;
-                    ctx.globalAlpha = 0.5;
-                    const angle = this.attackAnimation * 0.1;
-                    ctx.beginPath();
-                    ctx.arc(this.x + this.width/2, this.y + this.height/2, 40, angle, angle + Math.PI);
-                    ctx.stroke();
-                }
-                
-                ctx.restore();
-                
-                // رسم الكومبو والمستوى
-                this.drawHUD();
-            }
-            
-            drawWeapon() {
-                const weaponData = this.weapons[this.weapon];
-                ctx.fillStyle = this.isBlocking ? '#ffd700' : '#666';
-                ctx.lineWidth = 3;
-                
-                switch(this.weapon) {
-                    case 'sword':
-                        ctx.beginPath();
-                        ctx.moveTo(this.x + this.width - 5, this.y + 30);
-                        ctx.lineTo(this.x + this.width + 40, this.y + 20);
-                        ctx.lineTo(this.x + this.width + 35, this.y + 40);
-                        ctx.lineTo(this.x + this.width - 5, this.y + 50);
-                        ctx.closePath();
-                        ctx.fill();
-                        
-                        // لمعة السيف
-                        if (this.combo > 2) {
-                            ctx.strokeStyle = '#ffd700';
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            ctx.moveTo(this.x + this.width + 10, this.y + 25);
-                            ctx.lineTo(this.x + this.width + 45, this.y + 15);
-                            ctx.stroke();
-                        }
-                        break;
-                        
-                    case 'dagger':
-                        ctx.beginPath();
-                        ctx.moveTo(this.x + this.width - 5, this.y + 35);
-                        ctx.lineTo(this.x + this.width + 25, this.y + 30);
-                        ctx.lineTo(this.x + this.width + 20, this.y + 45);
-                        ctx.lineTo(this.x + this.width - 5, this.y + 50);
-                        ctx.closePath();
-                        ctx.fill();
-                        break;
-                        
-                    default:
-                        // أسلحة نارية
-                        ctx.fillRect(this.x + this.width - 5, this.y + 35, 30, 10);
-                        ctx.fillRect(this.x + this.width + 20, this.y + 30, 5, 20);
-                        break;
-                }
+                ctx.globalAlpha = 1;
             }
             
             drawHUD() {
                 // الكومبو
                 if (this.combo > 1) {
-                    ctx.fillStyle = '#ffd700';
-                    ctx.font = 'bold 26px Arial';
+                    ctx.save();
+                    const screenPos = camera.worldToScreen(this.x + this.width/2, this.y - 50);
+                    
+                    ctx.font = 'bold 32px Arial';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText(`COMBO x${this.combo}`, this.x + this.width/2, this.y - 40);
+                    
+                    // تدرج اللون للكومبو
+                    const comboGradient = ctx.createLinearGradient(
+                        screenPos.x - 50, screenPos.y,
+                        screenPos.x + 50, screenPos.y
+                    );
+                    comboGradient.addColorStop(0, '#ff0000');
+                    comboGradient.addColorStop(0.5, '#ffd700');
+                    comboGradient.addColorStop(1, '#ff0000');
+                    
+                    ctx.fillStyle = comboGradient;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#ffd700';
+                    
+                    const comboText = `COMBO x${this.combo}`;
+                    ctx.fillText(comboText, screenPos.x, screenPos.y);
+                    
+                    // تأثير النبض للكومبو العالي
+                    if (this.combo > 10) {
+                        const pulse = Math.sin(Date.now() * 0.01) * 0.1 + 1;
+                        ctx.font = `bold ${32 * pulse}px Arial`;
+                        ctx.fillText(comboText, screenPos.x, screenPos.y);
+                    }
+                    
+                    ctx.restore();
                 }
-                
-                // المستوى
-                ctx.fillStyle = '#4169e1';
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText(`Lv.${this.level}`, this.x, this.y - 60);
             }
         }
         
-        // ============= نظام الرصاصات المتقدم =============
-        class AdvancedBullet {
+        // ============= الرصاصات فائقة الجودة =============
+        class UltraBullet {
             constructor(x, y, speed, damage, color, type, spread = 0) {
                 this.x = x;
                 this.y = y;
@@ -2046,217 +1704,269 @@
                 this.color = color;
                 this.type = type;
                 this.spread = spread;
+                
                 this.vx = speed * (1 + (Math.random() - 0.5) * spread);
                 this.vy = (Math.random() - 0.5) * speed * spread;
-                this.width = type === 'shotgun' ? 4 : 6;
-                this.height = type === 'shotgun' ? 4 : 12;
-                this.trail = [];
-                this.lifetime = type === 'rocket' ? 120 : 60;
-                this.age = 0;
                 
+                this.size = type === 'rocket' ? 8 : 
+                           type === 'shotgun' ? 4 : 6;
+                
+                this.trail = [];
+                this.lifetime = 120;
+                this.age = 0;
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+                
+                // خصائص خاصة حسب النوع
                 if (type === 'rocket') {
-                    this.width = 10;
-                    this.height = 10;
-                } else if (type === 'plasma') {
-                    this.width = 8;
-                    this.height = 8;
+                    this.size = 10;
+                    this.gravity = 0.05;
+                    this.smoke = true;
+                } else if (type === 'rifle') {
+                    this.size = 8;
+                    this.penetration = 2;
+                } else {
+                    this.gravity = 0.02;
+                    this.smoke = false;
+                    this.penetration = 1;
                 }
             }
             
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
+                this.vy += this.gravity || 0;
+                this.rotation += this.rotationSpeed;
                 this.age++;
                 
-                // جاذبية للصواريخ
-                if (this.type === 'rocket') {
-                    this.vy += 0.05;
-                }
-                
                 // إضافة أثر
-                this.trail.push({x: this.x, y: this.y});
-                if (this.trail.length > 10) this.trail.shift();
+                this.trail.push({
+                    x: this.x,
+                    y: this.y,
+                    size: this.size * (1 - this.age / this.lifetime)
+                });
+                
+                if (this.trail.length > 15) this.trail.shift();
+                
+                // دخان للصواريخ
+                if (this.smoke && this.age % 3 === 0) {
+                    particles.createEffect('spark', this.x, this.y, '#888888', {
+                        count: 2,
+                        size: 3,
+                        speed: 2,
+                        life: 0.8
+                    });
+                }
                 
                 return this.age >= this.lifetime;
             }
             
             draw() {
                 // رسم الأثر
-                ctx.globalAlpha = 0.3;
-                this.trail.forEach((pos, i) => {
-                    const alpha = i / this.trail.length;
-                    ctx.fillStyle = this.color;
+                if (this.trail.length > 1) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.4;
                     
-                    if (this.type === 'laser' || this.type === 'plasma') {
-                        ctx.beginPath();
-                        ctx.arc(pos.x, pos.y, this.width * alpha * 0.8, 0, Math.PI * 2);
-                        ctx.fill();
-                    } else {
-                        ctx.fillRect(
-                            pos.x - this.width/2 * alpha,
-                            pos.y - this.height/2 * alpha,
-                            this.width * alpha,
-                            this.height * alpha
+                    for (let i = 0; i < this.trail.length - 1; i++) {
+                        const current = this.trail[i];
+                        const next = this.trail[i + 1];
+                        const alpha = i / this.trail.length;
+                        
+                        const gradient = ctx.createLinearGradient(
+                            current.x, current.y,
+                            next.x, next.y
                         );
+                        gradient.addColorStop(0, `${this.color}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`);
+                        gradient.addColorStop(1, `${this.color}00`);
+                        
+                        ctx.strokeStyle = gradient;
+                        ctx.lineWidth = current.size;
+                        ctx.lineCap = 'round';
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(current.x, current.y);
+                        ctx.lineTo(next.x, next.y);
+                        ctx.stroke();
                     }
-                });
-                
-                ctx.globalAlpha = 1;
+                    
+                    ctx.restore();
+                }
                 
                 // رسم الرصاصة
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
                 switch(this.type) {
                     case 'rocket':
                         this.drawRocket();
                         break;
-                    case 'plasma':
-                        this.drawPlasma();
-                        break;
-                    case 'laser':
-                        this.drawLaser();
+                    case 'rifle':
+                        this.drawSniperBullet();
                         break;
                     default:
-                        this.drawBasic();
+                        this.drawStandardBullet();
                         break;
                 }
+                
+                ctx.restore();
             }
             
             drawRocket() {
                 // جسم الصاروخ
-                const gradient = ctx.createLinearGradient(
-                    this.x - this.width/2, this.y,
-                    this.x + this.width/2, this.y
-                );
-                gradient.addColorStop(0, '#ff8c00');
-                gradient.addColorStop(0.5, '#ff4500');
-                gradient.addColorStop(1, '#8b0000');
+                const bodyGradient = ctx.createLinearGradient(-this.size/2, 0, this.size/2, 0);
+                bodyGradient.addColorStop(0, '#ff8c00');
+                bodyGradient.addColorStop(0.3, '#ff4500');
+                bodyGradient.addColorStop(0.7, '#8b0000');
+                bodyGradient.addColorStop(1, '#660000');
                 
-                ctx.fillStyle = gradient;
+                ctx.fillStyle = bodyGradient;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.width/2, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, this.size/2, this.size, 0, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // ذيل الصاروخ
+                // رأس الصاروخ
                 ctx.fillStyle = '#ffd700';
                 ctx.beginPath();
-                ctx.moveTo(this.x - this.width/2, this.y);
-                ctx.lineTo(this.x - this.width, this.y + this.height);
-                ctx.lineTo(this.x + this.width/2, this.y);
-                ctx.closePath();
+                ctx.arc(this.size/2, 0, this.size/3, 0, Math.PI * 2);
                 ctx.fill();
+                
+                // زعانف
+                ctx.fillStyle = '#ff4500';
+                for (let i = 0; i < 3; i++) {
+                    const angle = (i * Math.PI * 2) / 3;
+                    ctx.save();
+                    ctx.rotate(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(-this.size/2, 0);
+                    ctx.lineTo(-this.size, -this.size/3);
+                    ctx.lineTo(-this.size, this.size/3);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
                 
                 // اللهب
-                ctx.fillStyle = '#ff0000';
+                const flameSize = this.size * 1.5;
+                const flameGradient = ctx.createRadialGradient(
+                    -this.size/2, 0, 0,
+                    -this.size/2, 0, flameSize
+                );
+                flameGradient.addColorStop(0, '#ffff00');
+                flameGradient.addColorStop(0.5, '#ff4500');
+                flameGradient.addColorStop(1, 'transparent');
+                
+                ctx.fillStyle = flameGradient;
                 ctx.beginPath();
-                ctx.arc(this.x - this.width, this.y + this.height, this.width/3, 0, Math.PI * 2);
+                ctx.arc(-this.size/2, 0, flameSize, 0, Math.PI * 2);
                 ctx.fill();
             }
             
-            drawPlasma() {
-                // كرة بلازما متوهجة
-                const gradient = ctx.createRadialGradient(
-                    this.x, this.y, 0,
-                    this.x, this.y, this.width
-                );
-                gradient.addColorStop(0, '#00ff00');
-                gradient.addColorStop(0.7, '#008000');
-                gradient.addColorStop(1, 'transparent');
+            drawSniperBullet() {
+                // نواة الرصاصة
+                const coreGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+                coreGradient.addColorStop(0, '#ffffff');
+                coreGradient.addColorStop(0.7, '#00ffff');
+                coreGradient.addColorStop(1, '#008b8b');
                 
-                ctx.fillStyle = gradient;
+                ctx.fillStyle = coreGradient;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.width, 0, Math.PI * 2);
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // مركز ساطع
+                // قلب الرصاصة
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.width/3, 0, Math.PI * 2);
+                ctx.arc(0, 0, this.size/3, 0, Math.PI * 2);
                 ctx.fill();
-            }
-            
-            drawLaser() {
-                // شعاع ليزر
-                const gradient = ctx.createLinearGradient(
-                    this.x - this.width/2, this.y,
-                    this.x + this.width/2, this.y
-                );
-                gradient.addColorStop(0, '#9370db');
-                gradient.addColorStop(0.5, '#ffffff');
-                gradient.addColorStop(1, '#9370db');
                 
-                ctx.fillStyle = gradient;
+                // حلقة خارجية
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.roundRect(this.x - this.width/2, this.y - this.height/2, 
-                            this.width, this.height, 2);
-                ctx.fill();
+                ctx.arc(0, 0, this.size * 1.2, 0, Math.PI * 2);
+                ctx.stroke();
             }
             
-            drawBasic() {
-                ctx.fillStyle = this.color;
-                if (this.type === 'sniper') {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.width, 0, Math.PI * 2);
-                    ctx.fill();
-                } else {
-                    ctx.fillRect(this.x - this.width/2, this.y - this.height/2, 
-                                this.width, this.height);
-                }
+            drawStandardBullet() {
+                // الجسم الرئيسي
+                const bulletGradient = ctx.createLinearGradient(
+                    -this.size/2, -this.size/2,
+                    this.size/2, this.size/2
+                );
+                bulletGradient.addColorStop(0, this.color);
+                bulletGradient.addColorStop(1, '#ffffff');
+                
+                ctx.fillStyle = bulletGradient;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size/2, this.size, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // طرف الرصاصة
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(this.size/2, 0, this.size/3, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
         
-        // ============= الأعداء المتقدمون =============
-        class AdvancedEnemy {
+        // ============= الأعداء فائقة الجودة =============
+        class UltraEnemy {
             constructor(wave, type = 'normal') {
                 this.type = type;
-                this.width = type === 'boss' ? 70 : type === 'elite' ? 55 : 45;
-                this.height = type === 'boss' ? 90 : type === 'elite' ? 75 : 60;
+                
+                // القياسات حسب النوع
+                switch(type) {
+                    case 'boss':
+                        this.width = 80;
+                        this.height = 100;
+                        this.speed = 1.2 + wave * 0.2;
+                        this.health = 200 + wave * 50;
+                        this.maxHealth = 200 + wave * 50;
+                        this.damage = 20 + wave * 5;
+                        this.reward = 300 + wave * 100;
+                        this.color = '#ff8c00';
+                        break;
+                    case 'elite':
+                        this.width = 60;
+                        this.height = 80;
+                        this.speed = 2 + wave * 0.3;
+                        this.health = 100 + wave * 30;
+                        this.maxHealth = 100 + wave * 30;
+                        this.damage = 15 + wave * 4;
+                        this.reward = 150 + wave * 50;
+                        this.color = '#ffd700';
+                        break;
+                    default:
+                        this.width = 45;
+                        this.height = 65;
+                        this.speed = 2.5 + wave * 0.4;
+                        this.health = 50 + wave * 20;
+                        this.maxHealth = 50 + wave * 20;
+                        this.damage = 10 + wave * 3;
+                        this.reward = 80 + wave * 30;
+                        this.color = '#ffff00';
+                        break;
+                }
                 
                 // الموضع
-                this.x = -100 - Math.random() * 100;
-                this.y = canvas.height - 150 - this.height + Math.random() * 50;
+                this.x = -100 - Math.random() * 200;
+                this.y = canvas.height - 200 - this.height + Math.random() * 50;
                 
                 // الحركة
-                this.speed = 1.5 + Math.random() * 1.5 + wave * 0.3;
-                if (type === 'boss') this.speed *= 0.6;
-                if (type === 'elite') this.speed *= 0.8;
-                
                 this.velocityX = 0;
                 this.velocityY = 0;
                 this.onGround = true;
                 
-                // الإحصائيات
-                this.health = 60 + wave * 15;
-                this.maxHealth = this.health;
-                this.damage = 12 + wave * 3;
-                this.reward = 70 + wave * 15;
-                this.expReward = 20 + wave * 5;
-                
-                if (type === 'elite') {
-                    this.health *= 1.5;
-                    this.maxHealth *= 1.5;
-                    this.damage *= 1.3;
-                    this.reward *= 1.5;
-                    this.expReward *= 1.5;
-                } else if (type === 'boss') {
-                    this.health *= 3;
-                    this.maxHealth *= 3;
-                    this.damage *= 2;
-                    this.reward *= 3;
-                    this.expReward *= 3;
-                }
-                
-                // نظام الأرجل
-                this.legSystem = new LegAnimationSystem();
-                this.legSystem.createLegsForEntity(this, type === 'boss' ? 4 : 2);
-                
-                // الهجوم
-                this.attackCooldown = 0;
-                this.attackRange = 50;
-                this.color = type === 'boss' ? '#ff8c00' : 
-                            type === 'elite' ? '#ffd700' : '#ffff00';
-                
                 // الرسوم المتحركة
-                this.walkAnimation = 0;
+                this.walkAnimation = Math.random() * Math.PI * 2;
+                this.legAngle = 0;
                 this.hitAnimation = 0;
+                this.attackCooldown = 0;
+                
+                // التحديات
+                this.attackRange = this.type === 'boss' ? 70 : 50;
+                this.attackSpeed = 60 - wave * 2;
             }
             
             update(player) {
@@ -2267,67 +1977,90 @@
                 
                 if (distance > 0) {
                     this.velocityX = (dx / distance) * this.speed;
-                    this.velocityY = (dy / distance) * this.speed * 0.5;
+                    this.velocityY = (dy / distance) * this.speed * 0.3;
                 }
                 
                 // تحديث الموضع
                 this.x += this.velocityX;
                 this.y += this.velocityY;
                 
-                // التحقق من الأرض
-                const groundLevel = canvas.height - 150;
+                // حدود الأرض
+                const groundLevel = canvas.height - 200;
                 if (this.y > groundLevel - this.height) {
                     this.y = groundLevel - this.height;
                     this.onGround = true;
                 } else {
                     this.onGround = false;
+                    this.velocityY += 0.5; // جاذبية
                 }
                 
-                // تحديث الرسوم المتحركة للأرجل
-                this.legSystem.update(this, this.velocityX, this.velocityY, this.onGround);
+                // تحديث الرسوم المتحركة
+                this.updateAnimation();
                 
-                // تحديث توقيتات الهجوم
+                // تحديث الهجوم
                 if (this.attackCooldown > 0) this.attackCooldown--;
-                if (this.hitAnimation > 0) this.hitAnimation--;
                 
-                // تحقق من الاصطدام باللاعب
+                // الهجوم على اللاعب
                 if (distance < this.attackRange && this.attackCooldown <= 0) {
-                    this.attackCooldown = 60;
-                    this.attackAnimation = 10;
+                    this.attackCooldown = this.attackSpeed;
                     return player.takeDamage(this.damage, this);
                 }
                 
                 return false;
             }
             
+            updateAnimation() {
+                // حركة المشي
+                if (Math.abs(this.velocityX) > 0.1) {
+                    this.walkAnimation += 0.3;
+                    this.legAngle = Math.sin(this.walkAnimation) * 0.4;
+                } else {
+                    this.legAngle = 0;
+                }
+                
+                // تأثير الضرر
+                if (this.hitAnimation > 0) {
+                    this.hitAnimation--;
+                }
+            }
+            
             takeDamage(amount, source) {
                 this.health -= amount;
                 this.hitAnimation = 10;
                 
-                // تأثيرات الضرر
+                // تأثيرات بصرية
                 const effectColor = this.type === 'boss' ? '#8b0000' : 
                                   this.type === 'elite' ? '#ff4500' : '#ff0000';
                 
                 particles.createEffect('blood', 
                     this.x + this.width/2, 
                     this.y + this.height/2, 
-                    effectColor, 
-                    15
+                    effectColor,
+                    { 
+                        count: 15 + amount / 5,
+                        size: this.type === 'boss' ? 8 : 5,
+                        speed: 6 + amount / 10
+                    }
                 );
                 
-                // إرجاع القوة للمشتتات
+                // الارتداد
                 const dx = this.x - source.x;
                 const dy = this.y - source.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (dist > 0) {
-                    this.x += (dx / dist) * 10;
-                    this.y += (dy / dist) * 5;
+                if (distance > 0) {
+                    const force = Math.min(15, amount / 5);
+                    this.x += (dx / distance) * force;
+                    this.y += (dy / distance) * force * 0.5;
                 }
                 
                 // مؤشر الضرر
-                createHitIndicator(this.x + this.width/2, this.y, 
-                    `-${Math.round(amount)}`, effectColor);
+                createDamageIndicator(
+                    this.x + this.width/2, 
+                    this.y - 20, 
+                    `-${Math.round(amount)}`, 
+                    effectColor
+                );
                 
                 return this.health <= 0;
             }
@@ -2340,505 +2073,260 @@
                     ctx.globalAlpha = 0.7;
                 }
                 
-                // رسم الأرجل
-                this.legSystem.draw(this);
+                // رسم الساقين
+                this.drawLegs();
                 
-                // جسم العدو
-                const gradient = ctx.createLinearGradient(
-                    this.x, this.y, 
+                // رسم الجسم
+                this.drawBody();
+                
+                // رسم الرأس
+                this.drawHead();
+                
+                // رسم شريط الصحة
+                this.drawHealthBar();
+                
+                // تأثيرات خاصة للبوس
+                if (this.type === 'boss') {
+                    this.drawBossEffects();
+                }
+                
+                ctx.restore();
+            }
+            
+            drawLegs() {
+                const legWidth = 12;
+                const legHeight = 40;
+                
+                // الساق اليسرى
+                ctx.save();
+                ctx.translate(this.x + this.width * 0.3, this.y + this.height);
+                ctx.rotate(this.legAngle);
+                
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(-legWidth/2, 0, legWidth, legHeight);
+                
+                // القدم
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(-legWidth, legHeight - 5, legWidth * 2, 10);
+                
+                ctx.restore();
+                
+                // الساق اليمنى
+                ctx.save();
+                ctx.translate(this.x + this.width * 0.7, this.y + this.height);
+                ctx.rotate(-this.legAngle);
+                
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(-legWidth/2, 0, legWidth, legHeight);
+                
+                // القدم
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(-legWidth, legHeight - 5, legWidth * 2, 10);
+                
+                ctx.restore();
+            }
+            
+            drawBody() {
+                // تدرج اللون للجسم
+                const bodyGradient = ctx.createLinearGradient(
+                    this.x, this.y,
                     this.x, this.y + this.height
                 );
                 
                 if (this.type === 'boss') {
-                    gradient.addColorStop(0, '#ff8c00');
-                    gradient.addColorStop(0.5, '#ff4500');
-                    gradient.addColorStop(1, '#8b4500');
+                    bodyGradient.addColorStop(0, '#ff8c00');
+                    bodyGradient.addColorStop(0.4, '#ff4500');
+                    bodyGradient.addColorStop(0.7, '#8b0000');
+                    bodyGradient.addColorStop(1, '#660000');
                 } else if (this.type === 'elite') {
-                    gradient.addColorStop(0, '#ffd700');
-                    gradient.addColorStop(0.5, '#daa520');
-                    gradient.addColorStop(1, '#b8860b');
+                    bodyGradient.addColorStop(0, '#ffd700');
+                    bodyGradient.addColorStop(0.4, '#daa520');
+                    bodyGradient.addColorStop(0.7, '#b8860b');
+                    bodyGradient.addColorStop(1, '#8b4513');
                 } else {
-                    gradient.addColorStop(0, '#ffff00');
-                    gradient.addColorStop(0.5, '#ffd700');
-                    gradient.addColorStop(1, '#b8860b');
+                    bodyGradient.addColorStop(0, '#ffff00');
+                    bodyGradient.addColorStop(0.4, '#ffd700');
+                    bodyGradient.addColorStop(0.7, '#b8860b');
+                    bodyGradient.addColorStop(1, '#8b4513');
                 }
                 
-                ctx.fillStyle = gradient;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = bodyGradient;
+                
+                // الجسم الرئيسي
+                ctx.beginPath();
+                ctx.roundRect(this.x, this.y, this.width, this.height, 8);
+                ctx.fill();
+                
+                // تفاصيل الدروع
+                ctx.strokeStyle = this.type === 'boss' ? '#ffd700' : '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(this.x + 5, this.y + 10, this.width - 10, this.height - 20, 4);
+                ctx.stroke();
+            }
+            
+            drawHead() {
+                const headRadius = this.type === 'boss' ? 25 : 
+                                 this.type === 'elite' ? 20 : 15;
                 
                 // الرأس
                 ctx.fillStyle = this.type === 'boss' ? '#ff4500' : 
                                this.type === 'elite' ? '#daa520' : '#f0e68c';
                 ctx.beginPath();
-                ctx.arc(this.x + this.width/2, this.y - 10, 18, 0, Math.PI * 2);
+                ctx.arc(
+                    this.x + this.width/2, 
+                    this.y - headRadius/2, 
+                    headRadius, 
+                    0, 
+                    Math.PI * 2
+                );
                 ctx.fill();
                 
                 // العيون
                 ctx.fillStyle = '#000';
+                const eyeSpacing = this.type === 'boss' ? 15 : 10;
                 ctx.beginPath();
-                ctx.arc(this.x + this.width/2 - 12, this.y - 10, 4, 0, Math.PI * 2);
-                ctx.arc(this.x + this.width/2 + 12, this.y - 10, 4, 0, Math.PI * 2);
+                ctx.arc(
+                    this.x + this.width/2 - eyeSpacing, 
+                    this.y - headRadius/2 - 3, 
+                    4, 
+                    0, 
+                    Math.PI * 2
+                );
+                ctx.arc(
+                    this.x + this.width/2 + eyeSpacing, 
+                    this.y - headRadius/2 - 3, 
+                    4, 
+                    0, 
+                    Math.PI * 2
+                );
                 ctx.fill();
                 
                 // الفم
                 ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.beginPath();
-                if (this.type === 'boss') {
-                    ctx.arc(this.x + this.width/2, this.y, 12, 0.2, Math.PI - 0.2);
-                } else {
-                    ctx.arc(this.x + this.width/2, this.y + 5, 8, 0.2, Math.PI - 0.2);
-                }
+                const mouthRadius = this.type === 'boss' ? 15 : 10;
+                ctx.arc(
+                    this.x + this.width/2, 
+                    this.y - headRadius/2 + 10, 
+                    mouthRadius, 
+                    0.2, 
+                    Math.PI - 0.2
+                );
                 ctx.stroke();
+                
+                // قرون للبوس
+                if (this.type === 'boss') {
+                    ctx.fillStyle = '#ffd700';
+                    for (let i = 0; i < 2; i++) {
+                        const side = i === 0 ? -1 : 1;
+                        ctx.beginPath();
+                        ctx.moveTo(this.x + this.width/2 + side * 20, this.y - headRadius/2 - 10);
+                        ctx.lineTo(this.x + this.width/2 + side * 35, this.y - headRadius/2 - 25);
+                        ctx.lineTo(this.x + this.width/2 + side * 30, this.y - headRadius/2 - 15);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            drawHealthBar() {
+                const barWidth = this.width;
+                const barHeight = 8;
+                const barY = this.y - 15;
+                
+                // خلفية الشريط
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(this.x, barY, barWidth, barHeight);
                 
                 // شريط الصحة
                 const healthPercent = this.health / this.maxHealth;
-                const barWidth = this.width;
-                const barHeight = 8;
-                const barY = this.y - 25;
-                
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(this.x, barY, barWidth, barHeight);
-                
                 if (healthPercent > 0) {
-                    ctx.fillStyle = healthPercent > 0.6 ? '#00ff00' : 
-                                   healthPercent > 0.3 ? '#ffff00' : '#ff4500';
+                    let barColor;
+                    if (healthPercent > 0.6) {
+                        barColor = '#00ff00';
+                    } else if (healthPercent > 0.3) {
+                        barColor = '#ffff00';
+                    } else {
+                        barColor = '#ff0000';
+                    }
+                    
+                    ctx.fillStyle = barColor;
                     ctx.fillRect(this.x, barY, barWidth * healthPercent, barHeight);
-                }
-                
-                // تاج للبوس
-                if (this.type === 'boss') {
-                    ctx.fillStyle = '#ffd700';
-                    ctx.beginPath();
-                    for (let i = 0; i < 7; i++) {
-                        const angle = (i * Math.PI * 2) / 7;
-                        const spikeX = this.x + this.width/2 + Math.cos(angle) * 25;
-                        const spikeY = this.y - 30 + Math.sin(angle) * 12;
-                        ctx.lineTo(spikeX, spikeY);
-                    }
-                    ctx.closePath();
-                    ctx.fill();
-                }
-                
-                ctx.restore();
-            }
-        }
-        
-        // ============= نظام الصوت المتقدم =============
-        class AudioSystem {
-            constructor() {
-                this.sounds = {};
-                this.music = null;
-                this.musicEnabled = true;
-                this.sfxEnabled = true;
-                this.volume = 0.5;
-            }
-            
-            async load() {
-                // إنشاء أصوات برمجياً
-                this.createSound('sword', 'sawtooth', 150, 50, 0.3);
-                this.createSound('gun', 'square', 800, 200, 0.1);
-                this.createSound('hit', 'sine', 300, 100, 0.2);
-                this.createSound('explosion', 'sawtooth', 200, 50, 0.3);
-                this.createSound('heal', 'sine', 523, 262, 0.3);
-                this.createSound('coin', 'triangle', 988, 494, 0.1);
-                this.createSound('levelUp', 'sine', [523, 659, 784], 0.5);
-            }
-            
-            createSound(name, type, freqStart, freqEnd, duration) {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                this.sounds[name] = {
-                    play: () => {
-                        if (!this.sfxEnabled) return;
+                    
+                    // تفاصيل إضافية للبوس
+                    if (this.type === 'boss') {
+                        ctx.strokeStyle = '#ffd700';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(this.x - 1, barY - 1, barWidth + 2, barHeight + 2);
                         
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-                        
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-                        
-                        oscillator.type = type;
-                        
-                        if (Array.isArray(freqStart)) {
-                            // تسلسل نغمات
-                            freqStart.forEach((freq, i) => {
-                                oscillator.frequency.setValueAtTime(
-                                    freq, 
-                                    audioContext.currentTime + i * 0.1
-                                );
-                            });
-                            duration = freqStart.length * 0.1;
-                        } else {
-                            oscillator.frequency.setValueAtTime(freqStart, audioContext.currentTime);
-                            if (freqEnd) {
-                                oscillator.frequency.exponentialRampToValueAtTime(
-                                    freqEnd, 
-                                    audioContext.currentTime + duration
-                                );
-                            }
-                        }
-                        
-                        gainNode.gain.value = this.volume * 0.3;
-                        gainNode.gain.exponentialRampToValueAtTime(
-                            0.001, 
-                            audioContext.currentTime + duration
+                        // نص نسبة الصحة للبوس
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(
+                            `${Math.round(healthPercent * 100)}%`,
+                            this.x + barWidth/2,
+                            barY + barHeight/2 + 4
                         );
-                        
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + duration);
                     }
-                };
-            }
-            
-            play(soundName) {
-                if (this.sounds[soundName]) {
-                    this.sounds[soundName].play();
                 }
             }
             
-            toggleMusic() {
-                this.musicEnabled = !this.musicEnabled;
-            }
-            
-            toggleSFX() {
-                this.sfxEnabled = !this.sfxEnabled;
+            drawBossEffects() {
+                // هالة حول البوس
+                ctx.strokeStyle = '#ff4500';
+                ctx.lineWidth = 3;
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                ctx.arc(
+                    this.x + this.width/2,
+                    this.y + this.height/2,
+                    this.width * 0.8,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.stroke();
+                
+                // تأثير النبض
+                const pulse = Math.sin(Date.now() * 0.005) * 5;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.2;
+                ctx.beginPath();
+                ctx.arc(
+                    this.x + this.width/2,
+                    this.y + this.height/2,
+                    this.width * 0.8 + pulse,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.stroke();
+                
+                ctx.globalAlpha = 1;
             }
         }
         
-        // ============= نظام الإنجازات =============
-        class AchievementSystem {
-            constructor() {
-                this.achievements = {
-                    firstBlood: { unlocked: false, title: "الدم الأول", desc: "هزم أول عدو" },
-                    comboMaster: { unlocked: false, title: "سيد الكومبو", desc: "كومبو 10x" },
-                    rich: { unlocked: false, title: "الثري", desc: "احصل على 5000 ذهب" },
-                    levelUp: { unlocked: false, title: "النمو", desc: "الوصول للمستوى 5" },
-                    weaponMaster: { unlocked: false, title: "سيد الأسلحة", desc: "افتح 5 أسلحة" },
-                    waveSurvivor: { unlocked: false, title: "الناجي", desc: "وصل للموجة 10" }
-                };
-            }
-            
-            unlock(id, customDesc = null) {
-                if (this.achievements[id] && !this.achievements[id].unlocked) {
-                    this.achievements[id].unlocked = true;
-                    
-                    const popup = document.getElementById('achievementPopup');
-                    const title = document.getElementById('achievementTitle');
-                    const desc = document.getElementById('achievementDesc');
-                    
-                    title.textContent = this.achievements[id].title;
-                    desc.textContent = customDesc || this.achievements[id].desc;
-                    
-                    popup.style.display = 'flex';
-                    
-                    setTimeout(() => {
-                        popup.style.display = 'none';
-                    }, 3000);
-                    
-                    return true;
-                }
-                return false;
-            }
-        }
-        
-        // ============= نظام المتجر المتقدم =============
-        class AdvancedShopSystem {
-            static categories = {
-                weapons: [
-                    {
-                        id: 'shotgun',
-                        name: 'بندقية الصيد',
-                        description: 'ضرر عالي على مدى قصير',
-                        price: 1200,
-                        icon: '💥'
-                    },
-                    {
-                        id: 'rifle',
-                        name: 'بندقية القنص',
-                        description: 'ضرر هائل على مدى بعيد',
-                        price: 2000,
-                        icon: '🎯'
-                    },
-                    {
-                        id: 'minigun',
-                        name: 'رشاش سريع',
-                        description: 'إطلاق نار سريع جداً',
-                        price: 3000,
-                        icon: '🔥'
-                    },
-                    {
-                        id: 'rocket',
-                        name: 'قاذفة صواريخ',
-                        description: 'انفجارات مدمرة',
-                        price: 5000,
-                        icon: '🚀'
-                    },
-                    {
-                        id: 'flamethrower',
-                        name: 'قاذفة لهب',
-                        description: 'حرق الأعداء على مدى قصير',
-                        price: 3500,
-                        icon: '🔥'
-                    },
-                    {
-                        id: 'laser',
-                        name: 'بندقية ليزر',
-                        description: 'شعاع ليزر قوي',
-                        price: 4000,
-                        icon: '✨'
-                    },
-                    {
-                        id: 'plasma',
-                        name: 'بندقية بلازما',
-                        description: 'كرة بلازما مدمرة',
-                        price: 6000,
-                        icon: '⚡'
-                    }
-                ],
-                upgrades: [
-                    {
-                        id: 'swordUpgrade',
-                        name: 'ترقية السيف',
-                        description: '+15 ضرر للسيف',
-                        price: 500,
-                        icon: '🗡️'
-                    },
-                    {
-                        id: 'healthUpgrade',
-                        name: 'زيادة الصحة',
-                        description: '+25 صحة قصوى',
-                        price: 300,
-                        icon: '❤️'
-                    },
-                    {
-                        id: 'armorUpgrade',
-                        name: 'زيادة الدرع',
-                        description: '+25 درع قصوى',
-                        price: 400,
-                        icon: '🛡️'
-                    },
-                    {
-                        id: 'staminaUpgrade',
-                        name: 'زيادة الطاقة',
-                        description: '+25 طاقة قصوى',
-                        price: 250,
-                        icon: '⚡'
-                    },
-                    {
-                        id: 'damageUpgrade',
-                        name: 'زيادة الضرر',
-                        description: '+10% ضرر جميع الأسلحة',
-                        price: 1000,
-                        icon: '💥'
-                    }
-                ],
-                consumables: [
-                    {
-                        id: 'healthPotion',
-                        name: 'جرعة صحة',
-                        description: 'استعادة 50 صحة',
-                        price: 200,
-                        icon: '🧪'
-                    },
-                    {
-                        id: 'ammoPack',
-                        name: 'حزمة ذخيرة',
-                        description: 'إعادة ملء جميع الذخيرة',
-                        price: 300,
-                        icon: '📦'
-                    },
-                    {
-                        id: 'grenade',
-                        name: 'حزمة قنابل',
-                        description: '3 قنابل يدوية',
-                        price: 150,
-                        icon: '💣'
-                    },
-                    {
-                        id: 'shieldPotion',
-                        name: 'جرعة درع',
-                        description: 'درع كامل مؤقت',
-                        price: 400,
-                        icon: '🛡️'
-                    }
-                ],
-                special: [
-                    {
-                        id: 'doubleJumpSkill',
-                        name: 'مهارة القفز المزدوج',
-                        description: 'القفز مرتين في الهواء',
-                        price: 5000,
-                        icon: '⬆️'
-                    },
-                    {
-                        id: 'criticalSkill',
-                        name: 'مهارة الضربة الحرجة',
-                        description: '+20% فرصة ضربة حرجة',
-                        price: 3000,
-                        icon: '🎯'
-                    },
-                    {
-                        id: 'lifeStealSkill',
-                        name: 'مهارة امتصاص الحياة',
-                        description: 'استعادة 10% من الضرر',
-                        price: 4000,
-                        icon: '❤️'
-                    }
-                ]
-            };
-            
-            static renderShop() {
-                const shopItems = document.querySelector('.shop-items');
-                shopItems.innerHTML = '';
-                
-                const activeCategory = document.querySelector('.category-btn.active').dataset.category;
-                const items = this.categories[activeCategory];
-                
-                items.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'shop-item';
-                    if (player.weapons[item.id] && player.weapons[item.id].unlocked) {
-                        itemElement.classList.add('disabled');
-                    }
-                    itemElement.dataset.item = item.id;
-                    
-                    itemElement.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="font-size: 28px;">${item.icon}</div>
-                            <div class="item-info">
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-desc">${item.description}</div>
-                            </div>
-                        </div>
-                        <div class="item-price">${item.price} 💰</div>
-                    `;
-                    
-                    shopItems.appendChild(itemElement);
-                });
-            }
-            
-            static buyItem(itemId, player) {
-                // البحث عن العنصر في جميع الفئات
-                let item = null;
-                for (const category in this.categories) {
-                    item = this.categories[category].find(i => i.id === itemId);
-                    if (item) break;
-                }
-                
-                if (!item) return false;
-                
-                if (player.gold >= item.price) {
-                    player.gold -= item.price;
-                    player.updateUI();
-                    
-                    // تطبيق التأثير
-                    this.applyItemEffect(itemId, player);
-                    
-                    // تحديث المتجر
-                    this.renderShop();
-                    
-                    playSound('coin');
-                    showHint(`✅ تم شراء ${item.name}!`);
-                    
-                    return true;
-                } else {
-                    showHint('💰 لا تملك ذهباً كافياً!');
-                    return false;
-                }
-            }
-            
-            static applyItemEffect(itemId, player) {
-                switch(itemId) {
-                    case 'shotgun':
-                    case 'rifle':
-                    case 'minigun':
-                    case 'rocket':
-                    case 'flamethrower':
-                    case 'laser':
-                    case 'plasma':
-                        player.weapons[itemId].unlocked = true;
-                        player.weapons[itemId].ammo = player.weapons[itemId].ammo || 30;
-                        unlockWeapon(itemId);
-                        break;
-                        
-                    case 'swordUpgrade':
-                        player.weapons.sword.damage += 15;
-                        break;
-                        
-                    case 'healthUpgrade':
-                        player.maxHealth += 25;
-                        player.health = player.maxHealth;
-                        break;
-                        
-                    case 'armorUpgrade':
-                        player.maxArmor += 25;
-                        player.armor = player.maxArmor;
-                        break;
-                        
-                    case 'staminaUpgrade':
-                        player.maxStamina += 25;
-                        player.stamina = player.maxStamina;
-                        break;
-                        
-                    case 'damageUpgrade':
-                        for (const weapon in player.weapons) {
-                            player.weapons[weapon].damage *= 1.1;
-                        }
-                        break;
-                        
-                    case 'healthPotion':
-                        player.heal(50);
-                        break;
-                        
-                    case 'ammoPack':
-                        for (const weapon in player.weapons) {
-                            if (player.weapons[weapon].ammo !== Infinity) {
-                                player.weapons[weapon].ammo = player.weapons[weapon].ammo || 30;
-                            }
-                        }
-                        updateAmmoUI();
-                        break;
-                        
-                    case 'grenade':
-                        player.grenades += 3;
-                        break;
-                        
-                    case 'doubleJumpSkill':
-                        player.skills.doubleJump = true;
-                        break;
-                        
-                    case 'criticalSkill':
-                        player.skills.criticalHit = true;
-                        break;
-                        
-                    case 'lifeStealSkill':
-                        player.skills.lifeSteal = true;
-                        break;
-                }
-            }
-        }
-        
-        // ============= نظام الموجات المتقدم =============
-        class AdvancedWaveSystem {
+        // ============= نظام الموجات الذكي =============
+        class SmartWaveSystem {
             constructor() {
                 this.wave = 1;
-                this.enemiesPerWave = 8;
+                this.enemiesPerWave = 6;
                 this.enemiesSpawned = 0;
                 this.enemiesDefeated = 0;
                 this.spawnTimer = 0;
-                this.spawnDelay = 80;
+                this.spawnDelay = 100;
                 this.waveCooldown = 0;
-                this.bossWave = 5;
-                this.difficulty = 1;
+                this.bossEvery = 5;
+                this.eliteChance = 0.2;
             }
             
             update() {
                 if (this.waveCooldown > 0) {
                     this.waveCooldown--;
                     
-                    if (this.waveCooldown === 30) {
-                        showHint(`🔔 الموجة ${this.wave} تبدأ!`);
+                    if (this.waveCooldown === 60) {
+                        showMessage(`🌊 الموجة ${this.wave} تبدأ!`, '#ffd700');
                     }
                     
                     return;
@@ -2855,13 +2343,13 @@
                     let enemyType = 'normal';
                     const rand = Math.random();
                     
-                    if (this.wave >= this.bossWave && rand < 0.1) {
+                    if (this.wave % this.bossEvery === 0 && this.enemiesSpawned === 1) {
                         enemyType = 'boss';
-                    } else if (rand < 0.2) {
+                    } else if (rand < this.eliteChance + this.wave * 0.01) {
                         enemyType = 'elite';
                     }
                     
-                    enemies.push(new AdvancedEnemy(this.wave, enemyType));
+                    enemies.push(new UltraEnemy(this.wave, enemyType));
                     this.spawnTimer = 0;
                     
                     updateEnemiesUI();
@@ -2870,119 +2358,102 @@
                 if (this.enemiesDefeated >= this.enemiesPerWave) {
                     this.nextWave();
                 }
-                
-                // تحديث شريط التقدم
-                const progress = (this.enemiesDefeated / this.enemiesPerWave) * 100;
-                document.getElementById('waveProgress').style.width = `${progress}%`;
             }
             
             nextWave() {
                 this.wave++;
-                this.enemiesPerWave = 8 + Math.floor(this.wave * 1.5);
+                this.enemiesPerWave = 6 + Math.floor(this.wave * 1.2);
                 this.enemiesSpawned = 0;
                 this.enemiesDefeated = 0;
                 this.waveCooldown = 180;
-                this.difficulty = 1 + (this.wave * 0.1);
+                this.eliteChance = Math.min(0.4, 0.2 + this.wave * 0.02);
                 
                 // مكافآت الموجة
-                player.gold += 250 * this.wave;
-                player.gems += this.wave % 3 === 0 ? 1 : 0;
-                player.score += 1000 * this.wave;
-                player.heal(30 + this.wave * 5);
+                player.gold += 200 * this.wave;
+                player.score += 800 * this.wave;
+                player.heal(25 + this.wave * 5);
                 
                 // تحديث الواجهة
-                document.getElementById('waveText').textContent = this.wave;
-                document.getElementById('enemiesText').textContent = this.enemiesPerWave;
+                document.getElementById('waveValue').textContent = this.wave;
+                document.getElementById('enemiesLeft').textContent = this.enemiesPerWave;
                 
-                // إنجاز الموجة
-                if (this.wave === 10) {
-                    achievementSystem.unlock('waveSurvivor');
-                }
-                
-                showHint(`🎉 اكتملت الموجة ${this.wave-1}! +${250 * this.wave} ذهب`);
+                // رسالة نجاح
+                showMessage(
+                    `🎉 اكتملت الموجة ${this.wave-1}! +${200 * this.wave} ذهب`,
+                    '#00ff00',
+                    3000
+                );
             }
         }
         
         // ============= دوال المساعدة =============
-        function unlockWeapon(weaponType) {
-            const slot = document.querySelector(`[data-weapon="${weaponType}"]`);
-            if (slot) {
-                slot.classList.remove('locked');
-                
-                // إنجاز الأسلحة
-                const unlockedCount = Object.values(player.weapons).filter(w => w.unlocked).length;
-                if (unlockedCount >= 5) {
-                    achievementSystem.unlock('weaponMaster');
-                }
-            }
-        }
-        
         function updateAmmoUI() {
-            // تحديث عداد الذخيرة لكل سلاح
-            for (const weapon in player.weapons) {
-                const slot = document.querySelector(`[data-weapon="${weapon}"] .ammo-count`);
-                if (slot && player.weapons[weapon].ammo !== Infinity) {
-                    slot.textContent = player.weapons[weapon].ammo;
-                    slot.style.display = player.weapons[weapon].unlocked ? 'block' : 'none';
-                }
-            }
+            // تحديث عداد الذخيرة
+            document.getElementById('pistolAmmo').textContent = player.weapons.pistol.ammo;
+            document.getElementById('shotgunAmmo').textContent = player.weapons.shotgun.ammo;
+            document.getElementById('rifleAmmo').textContent = player.weapons.rifle.ammo;
+            document.getElementById('minigunAmmo').textContent = player.weapons.minigun.ammo;
+            document.getElementById('rocketAmmo').textContent = player.weapons.rocket.ammo;
         }
         
         function updateEnemiesUI() {
-            const left = waveSystem.enemiesPerWave - waveSystem.enemiesDefeated;
-            document.getElementById('enemiesText').textContent = left;
+            const remaining = waveSystem.enemiesPerWave - waveSystem.enemiesDefeated;
+            document.getElementById('enemiesLeft').textContent = remaining;
         }
         
-        function updateExpUI() {
-            const expPercent = (player.exp / player.maxExp) * 100;
-            // يمكن إضافة شريط تجربة إذا لزم الأمر
-        }
-        
-        function showDamageEffect(x, y) {
-            const overlay = document.getElementById('damageOverlay');
-            overlay.style.setProperty('--x', `${x}px`);
-            overlay.style.setProperty('--y', `${y}px`);
-            overlay.style.opacity = '0.6';
+        function showHitEffect(x, y) {
+            const hitFlash = document.getElementById('hitFlash');
+            const screenPos = camera.worldToScreen(x, y);
+            
+            hitFlash.style.setProperty('--hit-x', `${screenPos.x}px`);
+            hitFlash.style.setProperty('--hit-y', `${screenPos.y}px`);
+            hitFlash.style.opacity = '0.8';
             
             setTimeout(() => {
-                overlay.style.opacity = '0';
+                hitFlash.style.opacity = '0';
             }, 300);
         }
         
-        function createHitIndicator(x, y, text, color) {
+        function showHealEffect(x, y) {
+            const healFlash = document.getElementById('healFlash');
+            const screenPos = camera.worldToScreen(x, y);
+            
+            healFlash.style.setProperty('--heal-x', `${screenPos.x}px`);
+            healFlash.style.setProperty('--heal-y', `${screenPos.y}px`);
+            healFlash.style.opacity = '0.6';
+            
+            setTimeout(() => {
+                healFlash.style.opacity = '0';
+            }, 300);
+        }
+        
+        function createDamageIndicator(x, y, text, color) {
             const indicator = document.createElement('div');
-            indicator.className = 'hit-indicator';
+            indicator.className = 'damage-indicator';
             indicator.textContent = text;
-            indicator.style.left = `${x}px`;
-            indicator.style.top = `${y}px`;
             indicator.style.color = color;
+            
+            const screenPos = camera.worldToScreen(x, y);
+            indicator.style.left = `${screenPos.x}px`;
+            indicator.style.top = `${screenPos.y}px`;
             
             document.querySelector('.ui-layer').appendChild(indicator);
             
             setTimeout(() => {
                 indicator.remove();
-            }, 1000);
+            }, 1200);
         }
         
-        function showHint(message, duration = 2000) {
-            const hint = document.getElementById('hintMessage');
-            hint.textContent = message;
-            hint.style.display = 'block';
-            
-            setTimeout(() => {
-                hint.style.display = 'none';
-            }, duration);
+        function showMessage(text, color = '#ffffff', duration = 2000) {
+            createDamageIndicator(
+                player.x + player.width/2,
+                player.y - 100,
+                text,
+                color
+            );
         }
         
-        function playSound(soundName) {
-            audioSystem.play(soundName);
-        }
-        
-        function unlockAchievement(id, customDesc = null) {
-            achievementSystem.unlock(id, customDesc);
-        }
-        
-        // ============= نظام التحكم =============
+        // ============= التحكم =============
         let keys = {
             moveLeft: false,
             moveRight: false,
@@ -2994,7 +2465,7 @@
         };
         
         function setupControls() {
-            // أزرار الحركة
+            // أزرار التحكم
             document.querySelectorAll('.control-button').forEach(btn => {
                 const action = btn.dataset.action;
                 
@@ -3017,9 +2488,7 @@
                 
                 btn.addEventListener('touchcancel', (e) => {
                     e.preventDefault();
-                    if (action !== 'attack' && action !== 'jump') {
-                        keys[action] = false;
-                    }
+                    keys[action] = false;
                 });
                 
                 // الماوس
@@ -3038,66 +2507,33 @@
                 });
                 
                 btn.addEventListener('mouseleave', () => {
-                    if (action !== 'attack' && action !== 'jump') {
-                        keys[action] = false;
-                    }
+                    keys[action] = false;
                 });
             });
             
             // اختيار الأسلحة
             document.querySelectorAll('.weapon-slot').forEach(slot => {
                 slot.addEventListener('click', () => {
-                    if (slot.classList.contains('locked')) return;
-                    
                     const weapon = slot.dataset.weapon;
                     if (player.weapons[weapon].unlocked) {
-                        // إلغاء تفعيل جميع الأسلحة
-                        document.querySelectorAll('.weapon-slot').forEach(s => 
-                            s.classList.remove('active'));
+                        // إلغاء تفعيل الجميع
+                        document.querySelectorAll('.weapon-slot').forEach(s => {
+                            s.classList.remove('active');
+                        });
                         
                         // تفعيل السلاح المحدد
                         slot.classList.add('active');
                         player.weapon = weapon;
                         
-                        showHint(`✅ تم اختيار ${player.weapons[weapon].name}`);
+                        showMessage(`✅ ${player.weapons[weapon].name}`, '#ffd700');
                     }
                 });
             });
             
-            // فئات المتجر
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.category-btn').forEach(b => 
-                        b.classList.remove('active'));
-                    btn.classList.add('active');
-                    AdvancedShopSystem.renderShop();
-                });
-            });
-            
-            // شراء من المتجر
-            document.querySelector('.shop-items').addEventListener('click', (e) => {
-                const itemElement = e.target.closest('.shop-item');
-                if (itemElement && !itemElement.classList.contains('disabled')) {
-                    const itemId = itemElement.dataset.item;
-                    AdvancedShopSystem.buyItem(itemId, player);
-                }
-            });
-            
-            // فتح/إغلاق المتجر
-            document.getElementById('shopToggle').addEventListener('click', () => {
-                const shop = document.getElementById('shopPanel');
+            // الأزرار الجانبية
+            document.getElementById('shopButton').addEventListener('click', () => {
+                const shop = document.getElementById('shopWindow');
                 shop.style.display = shop.style.display === 'block' ? 'none' : 'block';
-                if (shop.style.display === 'block') {
-                    AdvancedShopSystem.renderShop();
-                }
-            });
-            
-            // فتح/إغلاق المهارات
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'k' || e.key === 'K') {
-                    const skills = document.getElementById('skillsPanel');
-                    skills.style.display = skills.style.display === 'block' ? 'none' : 'block';
-                }
             });
             
             // لوحة المفاتيح للاختبار
@@ -3111,15 +2547,12 @@
                     case 'shift': keys.block = true; break;
                     case 'control': keys.dash = true; break;
                     case 'x': case 'f': player.attack(enemies); break;
-                    case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': case '0':
-                        const weaponIndex = parseInt(e.key) - 1;
-                        const weapons = Object.keys(player.weapons);
-                        if (weaponIndex < weapons.length) {
-                            const weapon = weapons[weaponIndex];
-                            if (player.weapons[weapon].unlocked) {
-                                player.weapon = weapon;
-                                updateWeaponSelection();
-                            }
+                    case '1': case '2': case '3': case '4': case '5': case '6':
+                        const weapons = ['sword', 'pistol', 'shotgun', 'rifle', 'minigun', 'rocket'];
+                        const index = parseInt(e.key) - 1;
+                        if (weapons[index] && player.weapons[weapons[index]].unlocked) {
+                            player.weapon = weapons[index];
+                            updateWeaponSelection();
                         }
                         break;
                 }
@@ -3152,34 +2585,169 @@
             gameRunning = false;
             
             setTimeout(() => {
-                const message = `💀 انتهت اللعبة!\n\n⭐ النقاط: ${player.score}\n🌊 الموجة: ${waveSystem.wave}\n💰 الذهب: ${player.gold}\n🎯 المستوى: ${player.level}\n🗡️ الكومبو الأعلى: x${player.combo}\n👾 الأعداء المهزومين: ${player.kills}`;
+                const stats = `
+                    ⭐ النقاط: ${player.score}
+                    🌊 الموجة: ${waveSystem.wave}
+                    💰 الذهب: ${player.gold}
+                    🎯 المستوى: ${player.level}
+                    🗡️ الكومبو الأعلى: x${player.combo}
+                    👾 الأعداء المهزومين: ${player.kills}
+                `;
                 
-                if (confirm(message + '\n\nهل تريد إعادة اللعبة؟')) {
+                if (confirm(`💀 انتهت اللعبة!\n\n${stats}\n\nهل تريد إعادة اللعبة؟`)) {
                     location.reload();
                 }
-            }, 500);
+            }, 1000);
         }
         
-        // ============= متغيرات اللعبة =============
-        let player, enemies = [], bullets = [], particles, waveSystem, camera, audioSystem, achievementSystem;
+        // ============= رسم الخلفية =============
+        function drawBackground() {
+            // السماء
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, '#0f0c29');
+            skyGradient.addColorStop(0.3, '#302b63');
+            skyGradient.addColorStop(0.7, '#24243e');
+            skyGradient.addColorStop(1, '#1a1a2e');
+            
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(camera.x - 500, camera.y - 300, 
+                        canvas.width + 1000, canvas.height + 600);
+            
+            // النجوم
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 200; i++) {
+                const starX = (camera.x + i * 97) % (canvas.width * 2);
+                const starY = (camera.y + i * 137) % canvas.height;
+                const size = Math.sin(Date.now() * 0.0005 + i) * 0.8 + 1.2;
+                const alpha = Math.sin(Date.now() * 0.001 + i) * 0.3 + 0.7;
+                
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(starX, starY, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            
+            // القمر
+            ctx.fillStyle = '#f0f0f0';
+            ctx.beginPath();
+            ctx.arc(camera.x + canvas.width * 0.8, camera.y + 100, 40, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // تفاصيل القمر
+            ctx.fillStyle = '#d0d0d0';
+            ctx.beginPath();
+            ctx.arc(camera.x + canvas.width * 0.75, camera.y + 90, 8, 0, Math.PI * 2);
+            ctx.arc(camera.x + canvas.width * 0.85, camera.y + 120, 12, 0, Math.PI * 2);
+            ctx.arc(camera.x + canvas.width * 0.78, camera.y + 130, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // الأرض
+            const groundY = canvas.height - 200;
+            const groundGradient = ctx.createLinearGradient(
+                0, groundY,
+                0, groundY + 200
+            );
+            groundGradient.addColorStop(0, '#228b22');
+            groundGradient.addColorStop(0.5, '#1c7a1c');
+            groundGradient.addColorStop(1, '#145214');
+            
+            ctx.fillStyle = groundGradient;
+            ctx.fillRect(camera.x - 500, camera.y + groundY, 
+                        canvas.width + 1000, 200);
+            
+            // العشب
+            ctx.fillStyle = '#32cd32';
+            for (let i = 0; i < 40; i++) {
+                const x = camera.x + (i * 50) % (canvas.width + 1000);
+                const height = 15 + Math.sin(i * 0.5) * 5;
+                ctx.fillRect(x, camera.y + groundY, 40, height);
+            }
+            
+            // التلال في الخلفية
+            ctx.fillStyle = '#2e8b57';
+            for (let i = 0; i < 3; i++) {
+                const hillX = camera.x + i * 400;
+                const hillY = groundY - 100 - i * 30;
+                const hillWidth = 300 + i * 100;
+                
+                ctx.beginPath();
+                ctx.arc(hillX + hillWidth/2, hillY, hillWidth/2, 0, Math.PI);
+                ctx.fill();
+            }
+            
+            // القلعة في الخلفية
+            this.drawCastle();
+        }
+        
+        function drawCastle() {
+            const castleX = camera.x + canvas.width * 0.6;
+            const castleY = canvas.height - 400;
+            
+            // القاعدة
+            ctx.fillStyle = '#8b0000';
+            ctx.fillRect(castleX, castleY, 200, 200);
+            
+            // الجدران
+            ctx.fillStyle = '#b22222';
+            for (let i = 0; i < 5; i++) {
+                const wallX = castleX + i * 40;
+                ctx.fillRect(wallX, castleY - 30, 20, 30);
+            }
+            
+            // الأبراج
+            ctx.fillStyle = '#dc143c';
+            ctx.fillRect(castleX - 20, castleY - 80, 40, 80);
+            ctx.fillRect(castleX + 180, castleY - 80, 40, 80);
+            
+            // الأعلام
+            ctx.fillStyle = '#ffd700';
+            for (let i = 0; i < 2; i++) {
+                const flagX = castleX + (i * 200);
+                ctx.beginPath();
+                ctx.moveTo(flagX, castleY - 80);
+                ctx.lineTo(flagX - 20, castleY - 120);
+                ctx.lineTo(flagX, castleY - 100);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            // النوافذ
+            ctx.fillStyle = '#ffff00';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    const windowX = castleX + 30 + i * 50;
+                    const windowY = castleY + 30 + j * 60;
+                    ctx.fillRect(windowX, windowY, 15, 25);
+                }
+            }
+            
+            // البوابة
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(castleX + 80, castleY + 100, 40, 80);
+            
+            // تفاصيل البوابة
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.arc(castleX + 100, castleY + 140, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // ============= المتغيرات الرئيسية =============
+        let player, enemies = [], bullets = [], particles, camera, waveSystem;
         let gameRunning = true;
         
         // ============= تهيئة اللعبة =============
         function initGame() {
-            resizeCanvas();
-            
             // إنشاء الأنظمة
-            audioSystem = new AudioSystem();
-            audioSystem.load();
-            
-            achievementSystem = new AchievementSystem();
-            particles = new AdvancedParticleSystem();
-            waveSystem = new AdvancedWaveSystem();
-            camera = new AdvancedCamera();
+            particles = new UltraParticleSystem();
+            camera = new SmartCamera();
+            waveSystem = new SmartWaveSystem();
             
             // إنشاء اللاعب
-            player = new EnhancedPlayer();
+            player = new UltraPlayer();
             camera.follow(player);
+            camera.centerOn(player.x, player.y);
             
             // تهيئة المصفوفات
             enemies = [];
@@ -3191,10 +2759,11 @@
             // تحديث الواجهة
             updateAmmoUI();
             updateEnemiesUI();
-            updateExpUI();
             
-            // عرض التعليمات
-            showHint('🎮 حرك الأزرار حول اللاعب للتحكم!\n⚔️ اضغط زر الهجوم للقتال\n🏪 اضغط على المتجر للشراء');
+            // رسالة ترحيب
+            setTimeout(() => {
+                showMessage('🎮 حرك الأزرار للتحكم! ⚔️ اضغط للهجوم', '#ffd700', 3000);
+            }, 1000);
             
             // بدء حلقة اللعبة
             gameLoop();
@@ -3204,21 +2773,19 @@
         function gameLoop() {
             if (!gameRunning || !gameLoaded) return;
             
-            // تحديث الأنظمة
+            // تحديث الكاميرا
             camera.update();
-            particles.update();
             
-            // تطبيق الكاميرا
+            // تطبيق تحويلات الكاميرا
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             camera.apply();
             
             // رسم الخلفية
             drawBackground();
             
-            // تحديث اللاعب
+            // تحديث الأنظمة
+            particles.update();
             player.update();
-            
-            // تحديث الموجات
             waveSystem.update();
             
             // تحديث الأعداء
@@ -3232,28 +2799,18 @@
                     // مكافآت القتل
                     player.gold += enemy.reward;
                     player.score += enemy.reward * 2;
-                    player.addExp(enemy.expReward);
                     player.kills++;
                     waveSystem.enemiesDefeated++;
                     
                     // تأثيرات القتل
                     particles.createEffect('blood', enemy.x, enemy.y, 
-                        enemy.type === 'boss' ? '#8b0000' : '#ff0000', 30);
-                    
-                    // إنجاز أول قتل
-                    if (player.kills === 1) {
-                        unlockAchievement('firstBlood');
-                    }
-                    
-                    // إنجاز الكومبو
-                    if (player.combo >= 10) {
-                        unlockAchievement('comboMaster');
-                    }
-                    
-                    // إنجاز الثروة
-                    if (player.gold >= 5000) {
-                        unlockAchievement('rich');
-                    }
+                        enemy.type === 'boss' ? '#8b0000' : '#ff0000',
+                        { 
+                            count: 25,
+                            size: enemy.type === 'boss' ? 10 : 6,
+                            speed: 8
+                        }
+                    );
                     
                     enemies.splice(i, 1);
                     updateEnemiesUI();
@@ -3270,45 +2827,58 @@
                     continue;
                 }
                 
-                // تحقق من خروج الرصاصة
-                if (bullet.x > camera.x + canvas.width * 1.5 || 
-                    bullet.x < camera.x - canvas.width * 0.5 ||
-                    bullet.y > camera.y + canvas.height * 1.5 ||
-                    bullet.y < camera.y - canvas.height * 0.5) {
+                // حدود الشاشة
+                if (bullet.x < camera.x - 500 || 
+                    bullet.x > camera.x + canvas.width + 500 ||
+                    bullet.y < camera.y - 500 || 
+                    bullet.y > camera.y + canvas.height + 500) {
                     bullets.splice(i, 1);
                     continue;
                 }
                 
-                // تحقق من الاصطدام بالأعداء
+                // الاصطدام بالأعداء
                 let hit = false;
                 for (let j = enemies.length - 1; j >= 0; j--) {
                     const enemy = enemies[j];
                     
-                    const distX = Math.abs(bullet.x - (enemy.x + enemy.width/2));
-                    const distY = Math.abs(bullet.y - (enemy.y + enemy.height/2));
-                    const distance = Math.sqrt(distX * distX + distY * distY);
+                    const dx = bullet.x - (enemy.x + enemy.width/2);
+                    const dy = bullet.y - (enemy.y + enemy.height/2);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const hitRadius = enemy.width/2 + bullet.size;
                     
-                    if (distance < (enemy.width/2 + bullet.width)) {
+                    if (distance < hitRadius) {
                         if (enemy.takeDamage(bullet.damage, player)) {
                             // قتل العدو
                             player.gold += enemy.reward;
                             player.score += enemy.reward * 2;
-                            player.addExp(enemy.expReward);
                             player.kills++;
                             waveSystem.enemiesDefeated++;
                             
                             particles.createEffect('blood', enemy.x, enemy.y, 
-                                enemy.type === 'boss' ? '#8b0000' : '#ff0000', 40);
+                                enemy.type === 'boss' ? '#8b0000' : '#ff0000',
+                                { count: 30, size: 8, speed: 10 }
+                            );
+                            
                             enemies.splice(j, 1);
                             updateEnemiesUI();
                         }
                         
                         // تأثيرات الاصطدام
                         if (bullet.type === 'rocket') {
-                            particles.createEffect('explosion', bullet.x, bullet.y, '#ff4500', 30);
-                            camera.addShake(5);
+                            // انفجار الصاروخ
+                            particles.createEffect('spark', bullet.x, bullet.y, '#ff4500', {
+                                count: 40,
+                                size: 8,
+                                speed: 15,
+                                spread: 2
+                            });
+                            camera.addShake(6);
                         } else {
-                            particles.createEffect('spark', bullet.x, bullet.y, bullet.color, 10);
+                            particles.createEffect('spark', bullet.x, bullet.y, bullet.color, {
+                                count: 12,
+                                size: 4,
+                                speed: 6
+                            });
                         }
                         
                         bullets.splice(i, 1);
@@ -3319,7 +2889,6 @@
                 
                 if (!hit) {
                     bullet.draw();
-                    particles.createTrail(bullet.x, bullet.y, bullet.color);
                 }
             }
             
@@ -3332,62 +2901,16 @@
             // إعادة ضبط الكاميرا
             camera.reset();
             
-            // الاستمرار في حلقة اللعبة
+            // الاستمرار في الحلقة
             requestAnimationFrame(gameLoop);
         }
         
-        // ============= رسم الخلفية =============
-        function drawBackground() {
-            // خلفية متدرجة
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#0f0c29');
-            gradient.addColorStop(0.5, '#302b63');
-            gradient.addColorStop(1, '#24243e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(camera.x, camera.y, canvas.width, canvas.height);
-            
-            // النجوم
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 100; i++) {
-                const starX = (i * 137) % (canvas.width * 2);
-                const starY = (i * 97) % (canvas.height);
-                const size = Math.sin(Date.now() * 0.001 + i) * 0.5 + 1;
-                ctx.beginPath();
-                ctx.arc(camera.x + starX, camera.y + starY, size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            // الأرض
-            const groundY = canvas.height - 150;
-            ctx.fillStyle = '#228b22';
-            ctx.fillRect(camera.x, camera.y + groundY, canvas.width * 2, 150);
-            
-            // العشب
-            ctx.fillStyle = '#32cd32';
-            for (let i = 0; i < 20; i++) {
-                const x = camera.x + (i * 100) % (canvas.width * 2);
-                ctx.fillRect(x, camera.y + groundY, 80, 20);
-            }
-            
-            // القلعة في الخلفية
-            ctx.fillStyle = '#8b0000';
-            const castleX = camera.x + canvas.width * 1.5;
-            const castleY = camera.y + groundY - 200;
-            ctx.fillRect(castleX, castleY, 100, 200);
-            
-            // أبراج القلعة
-            ctx.fillStyle = '#dc143c';
-            ctx.fillRect(castleX - 20, castleY - 50, 140, 50);
-            ctx.fillRect(castleX + 20, castleY - 100, 60, 50);
-        }
-        
-        // ============= بدء اللعبة =============
-        window.addEventListener('load', () => {
-            resizeCanvas();
-        });
-        
+        // ============= بدء النظام =============
         window.addEventListener('resize', () => {
-            resizeCanvas();
+            // إعادة حساب موضع الكاميرا
+            if (camera && player) {
+                camera.centerOn(player.x, player.y);
+            }
         });
     </script>
 </body>
