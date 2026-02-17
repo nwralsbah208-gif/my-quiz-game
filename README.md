@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>واتساب المملكة - LEX-Ω</title>
+    <title>شبكة LEX-Ω الاجتماعية</title>
     <style>
         * {
             margin: 0;
@@ -16,8 +16,6 @@
             background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
             color: #fff;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         /* الهيدر الملكي */
@@ -27,6 +25,9 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .kingdom-title {
@@ -43,87 +44,99 @@
             margin-bottom: 15px;
         }
 
-        .visitor-counter {
-            display: inline-block;
-            background: #8B0000;
-            color: #FFD700;
-            padding: 10px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            border: 2px solid #FFD700;
-            margin-top: 10px;
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid #FFD700;
         }
 
         /* الحاوية الرئيسية */
         .main-container {
-            display: flex;
-            flex: 1;
-            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
             gap: 20px;
+            padding: 20px;
             max-width: 1400px;
             margin: 0 auto;
-            width: 100%;
         }
 
-        /* الشريط الجانبي */
-        .sidebar {
-            width: 300px;
+        /* الشريط الجانبي الأيمن */
+        .right-sidebar {
             background: rgba(255, 215, 0, 0.05);
             border: 2px solid #FFD700;
             border-radius: 20px;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
 
         .user-profile {
             text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
+            margin-bottom: 30px;
         }
 
         .user-avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, #FFD700, #8B0000);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 50px;
             margin: 0 auto 15px;
             border: 3px solid #FFD700;
         }
 
         .user-name {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             color: #FFD700;
             margin-bottom: 5px;
         }
 
-        .user-status {
-            display: inline-block;
-            background: #00ff00;
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
+        .user-bio {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .user-stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
             font-weight: bold;
+            color: #FFD700;
         }
 
-        .visitors-list {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 15px;
-            flex: 1;
-            overflow-y: auto;
-            max-height: 400px;
+        .stat-label {
+            font-size: 12px;
+            color: #ccc;
         }
 
-        .visitors-title {
+        .online-friends {
+            margin-top: 20px;
+        }
+
+        .online-title {
             color: #FFD700;
             font-size: 18px;
             margin-bottom: 15px;
@@ -131,7 +144,7 @@
             border-bottom: 2px solid #FFD700;
         }
 
-        .visitor-item {
+        .friend-item {
             display: flex;
             align-items: center;
             padding: 10px;
@@ -143,18 +156,12 @@
             transition: all 0.3s;
         }
 
-        .visitor-item:hover {
+        .friend-item:hover {
             background: rgba(255, 215, 0, 0.1);
             border-color: #FFD700;
-            transform: translateX(-5px);
         }
 
-        .visitor-item.active {
-            background: rgba(255, 215, 0, 0.15);
-            border-color: #FFD700;
-        }
-
-        .visitor-avatar {
+        .friend-avatar {
             width: 40px;
             height: 40px;
             background: #333;
@@ -166,129 +173,55 @@
             font-weight: bold;
         }
 
-        .visitor-info {
+        .friend-info {
             flex: 1;
         }
 
-        .visitor-name {
+        .friend-name {
             font-weight: bold;
             color: #FFD700;
         }
 
-        .visitor-id {
+        .friend-status {
             font-size: 11px;
-            color: #666;
+            color: #00ff00;
         }
 
-        .visitor-online {
-            width: 8px;
-            height: 8px;
-            background: #00ff00;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-
-        /* منطقة الدردشة */
-        .chat-area {
-            flex: 1;
+        /* منطقة المحتوى الرئيسي */
+        .main-content {
             background: rgba(255, 215, 0, 0.05);
             border: 2px solid #FFD700;
             border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            padding: 20px;
         }
 
-        .chat-header {
-            padding: 20px;
+        .create-post {
             background: rgba(0, 0, 0, 0.3);
-            border-bottom: 2px solid #FFD700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-with {
-            font-size: 20px;
-            font-weight: bold;
-            color: #FFD700;
-        }
-
-        .chat-status {
-            color: #00ff00;
-            font-size: 14px;
-        }
-
-        .messages-container {
-            flex: 1;
+            border-radius: 15px;
             padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 500px;
+            margin-bottom: 30px;
         }
 
-        .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 10px;
-            position: relative;
-            animation: fadeIn 0.3s;
-        }
-
-        .message.sent {
-            background: #FFD700;
-            color: #000;
-            align-self: flex-end;
-            border-bottom-left-radius: 3px;
-        }
-
-        .message.received {
-            background: #333;
-            color: #fff;
-            align-self: flex-start;
-            border-bottom-right-radius: 3px;
-        }
-
-        .message-sender {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-bottom: 3px;
-        }
-
-        .message-time {
-            font-size: 9px;
-            opacity: 0.5;
-            margin-top: 3px;
-            text-align: left;
-        }
-
-        .input-area {
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-top: 2px solid #FFD700;
-            display: flex;
-            gap: 10px;
-        }
-
-        .message-input {
-            flex: 1;
-            padding: 12px 20px;
+        .post-input {
+            width: 100%;
+            min-height: 100px;
             background: #222;
             border: 2px solid #FFD700;
-            border-radius: 30px;
+            border-radius: 15px;
+            padding: 15px;
             color: #fff;
-            font-size: 14px;
-            outline: none;
+            font-size: 16px;
+            margin-bottom: 15px;
+            resize: vertical;
         }
 
-        .message-input:focus {
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        .post-actions {
+            display: flex;
+            gap: 15px;
         }
 
-        .send-btn {
-            padding: 12px 30px;
+        .post-btn {
+            padding: 10px 25px;
             background: linear-gradient(135deg, #FFD700, #8B0000);
             border: none;
             border-radius: 30px;
@@ -298,11 +231,180 @@
             transition: transform 0.2s;
         }
 
-        .send-btn:hover {
+        .post-btn:hover {
             transform: scale(1.05);
         }
 
-        /* نظام تسجيل الدخول */
+        .posts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .post-card:hover {
+            border-color: #FFD700;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #FFD700, #8B0000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-left: 15px;
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .post-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+        }
+
+        .post-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .post-stat:hover {
+            color: #FFD700;
+        }
+
+        /* الشريط الجانبي الأيسر */
+        .left-sidebar {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .trending-title {
+            color: #FFD700;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .trending-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .trending-item:hover {
+            border-color: #FFD700;
+        }
+
+        .trending-hashtag {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .trending-count {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .suggested-friends {
+            margin-top: 30px;
+        }
+
+        .suggested-title {
+            color: #FFD700;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .suggested-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid #333;
+            border-radius: 10px;
+        }
+
+        .suggested-avatar {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .suggested-info {
+            flex: 1;
+        }
+
+        .suggested-name {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .follow-btn {
+            padding: 5px 15px;
+            background: transparent;
+            border: 1px solid #FFD700;
+            border-radius: 20px;
+            color: #FFD700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .follow-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        /* نافذة تسجيل الدخول */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -313,7 +415,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 2000;
             backdrop-filter: blur(10px);
         }
 
@@ -336,7 +438,6 @@
         .login-subtitle {
             color: #fff;
             margin-bottom: 30px;
-            opacity: 0.8;
         }
 
         .login-input {
@@ -367,59 +468,83 @@
         .login-btn:hover {
             transform: scale(1.05);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
 </head>
 <body>
     <!-- نافذة تسجيل الدخول -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-box">
-            <div class="login-title">👑 واتساب المملكة</div>
-            <div class="login-subtitle">أدخل اسمك للدخول إلى المملكة</div>
-            <input type="text" id="usernameInput" class="login-input" placeholder="اسمك في المملكة..." maxlength="20">
-            <button class="login-btn" onclick="joinKingdom()">دخول المملكة</button>
+            <div class="login-title">👑 شبكة LEX-Ω</div>
+            <div class="login-subtitle">انضم إلى المملكة الآن</div>
+            <input type="text" id="usernameInput" class="login-input" placeholder="اسم المستخدم" maxlength="30">
+            <input type="text" id="bioInput" class="login-input" placeholder="نبذة عنك (اختياري)" maxlength="100">
+            <button class="login-btn" onclick="joinNetwork()">انضمام</button>
         </div>
     </div>
 
-    <!-- واجهة الدردشة (مخفية في البداية) -->
-    <div id="chatInterface" style="display: none; width: 100%;">
+    <!-- واجهة الشبكة الاجتماعية (مخفية في البداية) -->
+    <div id="networkInterface" style="display: none;">
         <div class="royal-header">
-            <div class="kingdom-title">👑 واتساب المملكة 👑</div>
-            <div class="kingdom-subtitle">مرحباً بك في مملكة LEX-Ω</div>
-            <div class="visitor-counter" id="visitorCounter">عدد الزوار المتصلين: 0</div>
+            <div class="kingdom-title">👑 شبكة LEX-Ω الاجتماعية 👑</div>
+            <div class="kingdom-subtitle">حيث يلتقي جنود المملكة</div>
+            <div class="stats-bar">
+                <div class="stat-item" id="usersCount">0 عضو</div>
+                <div class="stat-item" id="postsCount">0 منشور</div>
+                <div class="stat-item" id="onlineCount">0 متصل</div>
+            </div>
         </div>
 
         <div class="main-container">
-            <!-- الشريط الجانبي -->
-            <div class="sidebar">
+            <!-- الشريط الجانبي الأيمن - الملف الشخصي -->
+            <div class="right-sidebar">
                 <div class="user-profile">
                     <div class="user-avatar" id="userAvatar">👤</div>
                     <div class="user-name" id="displayUsername"></div>
-                    <div class="user-status" id="userStatus">🟢 متصل</div>
+                    <div class="user-bio" id="userBio"></div>
+                    <div class="user-stats">
+                        <div class="user-stat">
+                            <div class="stat-number" id="userPostsCount">0</div>
+                            <div class="stat-label">منشورات</div>
+                        </div>
+                        <div class="user-stat">
+                            <div class="stat-number" id="userFollowersCount">0</div>
+                            <div class="stat-label">متابعون</div>
+                        </div>
+                        <div class="user-stat">
+                            <div class="stat-number" id="userFollowingCount">0</div>
+                            <div class="stat-label">يتابع</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="visitors-list">
-                    <div class="visitors-title">🟢 الزوار المتصلين</div>
-                    <div id="visitorsContainer"></div>
+                <div class="online-friends">
+                    <div class="online-title">🟢 المتصلون الآن</div>
+                    <div id="onlineUsersList"></div>
                 </div>
             </div>
 
-            <!-- منطقة الدردشة -->
-            <div class="chat-area">
-                <div class="chat-header">
-                    <span class="chat-with" id="chatWith">اختر شخصاً للتحدث معه</span>
-                    <span class="chat-status" id="chatStatus"></span>
+            <!-- المنطقة الرئيسية - المنشورات -->
+            <div class="main-content">
+                <div class="create-post">
+                    <textarea id="postContent" class="post-input" placeholder="ما الذي يجول في خاطرك يا جندي؟"></textarea>
+                    <div class="post-actions">
+                        <button class="post-btn" onclick="createPost()">نشر</button>
+                    </div>
                 </div>
 
-                <div class="messages-container" id="messagesContainer"></div>
+                <div class="posts-container" id="postsContainer">
+                    <!-- المنشورات ستظهر هنا -->
+                </div>
+            </div>
 
-                <div class="input-area">
-                    <input type="text" id="messageInput" class="message-input" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
-                    <button class="send-btn" onclick="sendMessage()">إرسال</button>
+            <!-- الشريط الجانبي الأيسر - مقترحات وترند -->
+            <div class="left-sidebar">
+                <div class="trending-title">🔥 الأكثر تفاعلاً</div>
+                <div id="trendingContainer"></div>
+
+                <div class="suggested-friends">
+                    <div class="suggested-title">👥 اقتراحات متابعة</div>
+                    <div id="suggestedContainer"></div>
                 </div>
             </div>
         </div>
@@ -427,335 +552,317 @@
 
     <script>
         // ============================================
-        // نظام واتساب المملكة - الإصدار الحقيقي
+        // شبكة LEX-Ω الاجتماعية - الإصدار الحقيقي
         // ============================================
 
-        // استخدام localStorage لتخزين البيانات (يعبر الأجهزة)
-        const STORAGE_KEY = 'lex_kingdom_whatsapp';
-        const VISITORS_KEY = 'lex_kingdom_visitors';
-        const MESSAGES_KEY = 'lex_kingdom_messages';
-
-        // بيانات المستخدمين والرسائل
+        // استخدام IndexedDB للتخزين المحلي (يعمل بدون إنترنت)
+        let db;
         let currentUser = null;
-        let currentChatUser = null;
-        let visitors = [];
-        let messages = {};
-        let updateInterval = null;
+        let users = [];
+        let posts = [];
+        let onlineUsers = new Set();
 
-        // تحميل البيانات المحفوظة
-        function loadSavedData() {
-            // تحميل الزوار
-            const savedVisitors = localStorage.getItem(VISITORS_KEY);
-            if (savedVisitors) {
-                try {
-                    visitors = JSON.parse(savedVisitors);
-                    // تنظيف الزوار الذين انتهت صلاحيتهم (أكثر من 30 ثانية)
-                    const now = Date.now();
-                    visitors = visitors.filter(v => now - v.lastSeen < 30000);
-                } catch (e) {
-                    visitors = [];
-                }
-            }
-
-            // تحميل الرسائل
-            const savedMessages = localStorage.getItem(MESSAGES_KEY);
-            if (savedMessages) {
-                try {
-                    messages = JSON.parse(savedMessages);
-                } catch (e) {
-                    messages = {};
-                }
-            }
-        }
-
-        // حفظ البيانات
-        function saveData() {
-            localStorage.setItem(VISITORS_KEY, JSON.stringify(visitors));
-            localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
-        }
-
-        // إنشاء معرف فريد للمستخدم
-        function generateUserId() {
-            return 'USER-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        }
-
-        // تحديث آخر ظهور للمستخدم
-        function updateUserLastSeen(userId) {
-            const user = visitors.find(v => v.id === userId);
-            if (user) {
-                user.lastSeen = Date.now();
-                saveData();
-            }
-        }
-
-        // إضافة زائر
-        function addVisitor(visitor) {
-            // إزالة أي زائر بنفس الاسم (إذا كان موجوداً)
-            visitors = visitors.filter(v => v.id !== visitor.id);
-            
-            // إضافة الزائر الجديد
-            visitor.lastSeen = Date.now();
-            visitors.push(visitor);
-            
-            // حفظ البيانات
-            saveData();
-            
-            // تحديث الواجهة
-            renderVisitors();
-            updateVisitorCounter();
-        }
-
-        // إزالة زائر
-        function removeVisitor(visitorId) {
-            visitors = visitors.filter(v => v.id !== visitorId);
-            saveData();
-            renderVisitors();
-            updateVisitorCounter();
-            
-            if (currentChatUser && currentChatUser.id === visitorId) {
-                currentChatUser = null;
-                document.getElementById('chatWith').textContent = 'اختر شخصاً للتحدث معه';
-                document.getElementById('chatStatus').textContent = '';
-            }
-        }
-
-        // تنظيف الزوار غير النشطين
-        function cleanupInactiveVisitors() {
-            const now = Date.now();
-            const beforeCount = visitors.length;
-            visitors = visitors.filter(v => now - v.lastSeen < 30000); // 30 ثانية
-            
-            if (visitors.length !== beforeCount) {
-                saveData();
-                renderVisitors();
-                updateVisitorCounter();
+        // إنشاء قاعدة البيانات
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('LexNetworkDB', 1);
                 
-                // إذا كان المستخدم الحالي قد غادر
-                if (currentChatUser && !visitors.find(v => v.id === currentChatUser.id)) {
-                    currentChatUser = null;
-                    document.getElementById('chatWith').textContent = 'اختر شخصاً للتحدث معه';
-                    document.getElementById('chatStatus').textContent = '';
-                }
-            }
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // جدول المستخدمين
+                    if (!db.objectStoreNames.contains('users')) {
+                        const userStore = db.createObjectStore('users', { keyPath: 'id' });
+                        userStore.createIndex('username', 'username', { unique: true });
+                    }
+                    
+                    // جدول المنشورات
+                    if (!db.objectStoreNames.contains('posts')) {
+                        const postStore = db.createObjectStore('posts', { keyPath: 'id', autoIncrement: true });
+                        postStore.createIndex('timestamp', 'timestamp');
+                        postStore.createIndex('userId', 'userId');
+                    }
+                    
+                    // جدول المتابعات
+                    if (!db.objectStoreNames.contains('follows')) {
+                        db.createObjectStore('follows', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            });
         }
 
-        // الانضمام إلى المملكة
-        function joinKingdom() {
+        // إنشاء معرف فريد
+        function generateId() {
+            return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // الانضمام إلى الشبكة
+        async function joinNetwork() {
             const username = document.getElementById('usernameInput').value.trim();
+            const bio = document.getElementById('bioInput').value.trim() || 'جندي في مملكة LEX-Ω';
+
             if (!username) {
-                alert('الرجاء إدخال اسمك');
+                alert('الرجاء إدخال اسم المستخدم');
                 return;
             }
 
-            // تحميل البيانات المحفوظة
-            loadSavedData();
+            await initDB();
+
+            // التحقق من عدم تكرار الاسم
+            const transaction = db.transaction(['users'], 'readonly');
+            const store = transaction.objectStore('users');
+            const index = store.index('username');
+            const existingUser = await new Promise((resolve) => {
+                const request = index.get(username);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve(null);
+            });
+
+            if (existingUser) {
+                alert('اسم المستخدم موجود بالفعل، اختر اسماً آخر');
+                return;
+            }
 
             // إنشاء مستخدم جديد
             currentUser = {
-                id: generateUserId(),
-                name: username,
+                id: generateId(),
+                username: username,
+                bio: bio,
                 avatar: username.charAt(0).toUpperCase(),
-                lastSeen: Date.now()
+                joinDate: new Date().toISOString(),
+                lastSeen: new Date().toISOString()
             };
+
+            // حفظ المستخدم
+            const writeTx = db.transaction(['users'], 'readwrite');
+            writeTx.objectStore('users').add(currentUser);
 
             // إخفاء نافذة تسجيل الدخول
             document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('chatInterface').style.display = 'block';
+            document.getElementById('networkInterface').style.display = 'block';
 
-            // عرض اسم المستخدم
-            document.getElementById('displayUsername').textContent = currentUser.name;
+            // عرض معلومات المستخدم
+            document.getElementById('displayUsername').textContent = currentUser.username;
+            document.getElementById('userBio').textContent = currentUser.bio;
             document.getElementById('userAvatar').textContent = currentUser.avatar;
 
-            // إضافة المستخدم إلى قائمة الزوار
-            addVisitor(currentUser);
+            // إضافة المستخدم إلى المتصلين
+            onlineUsers.add(currentUser.id);
+            updateOnlineUsers();
 
-            // بدء تحديثات دورية
-            if (updateInterval) clearInterval(updateInterval);
-            
-            // تحديث آخر ظهور كل 5 ثواني
-            updateInterval = setInterval(() => {
-                if (currentUser) {
-                    updateUserLastSeen(currentUser.id);
-                }
-                cleanupInactiveVisitors();
-            }, 5000);
+            // تحميل البيانات
+            loadUsers();
+            loadPosts();
+            loadStats();
 
-            // تحديث قائمة الزوار كل ثانية
+            // تحديث آخر ظهور كل 30 ثانية
             setInterval(() => {
                 if (currentUser) {
-                    loadSavedData();
-                    renderVisitors();
-                    updateVisitorCounter();
-                    
-                    // إعادة تحميل الرسائل إذا كنا في محادثة
-                    if (currentChatUser) {
-                        loadMessages(currentChatUser.id);
-                    }
+                    const tx = db.transaction(['users'], 'readwrite');
+                    const store = tx.objectStore('users');
+                    store.get(currentUser.id).onsuccess = (e) => {
+                        const user = e.target.result;
+                        if (user) {
+                            user.lastSeen = new Date().toISOString();
+                            store.put(user);
+                        }
+                    };
                 }
-            }, 1000);
+            }, 30000);
         }
 
-        // عرض قائمة الزوار
-        function renderVisitors() {
-            const container = document.getElementById('visitorsContainer');
-            if (!container) return;
+        // تحميل المستخدمين
+        function loadUsers() {
+            const tx = db.transaction(['users'], 'readonly');
+            const store = tx.objectStore('users');
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                users = request.result;
+                updateOnlineUsers();
+                updateSuggestedUsers();
+            };
+        }
+
+        // تحديث قائمة المتصلين
+        function updateOnlineUsers() {
+            const now = Date.now();
+            const fiveMinutes = 5 * 60 * 1000;
             
+            onlineUsers.clear();
+            
+            users.forEach(user => {
+                if (user.id !== currentUser?.id) {
+                    const lastSeen = new Date(user.lastSeen).getTime();
+                    if (now - lastSeen < fiveMinutes) {
+                        onlineUsers.add(user.id);
+                    }
+                }
+            });
+
+            displayOnlineUsers();
+            document.getElementById('onlineCount').textContent = onlineUsers.size + ' متصل';
+        }
+
+        // عرض المتصلين
+        function displayOnlineUsers() {
+            const container = document.getElementById('onlineUsersList');
             container.innerHTML = '';
 
-            visitors
-                .filter(v => v.id !== currentUser?.id)
-                .forEach(visitor => {
-                    const item = document.createElement('div');
-                    item.className = `visitor-item ${currentChatUser && currentChatUser.id === visitor.id ? 'active' : ''}`;
-                    item.onclick = () => selectChatUser(visitor);
-                    
-                    item.innerHTML = `
-                        <div class="visitor-avatar">${visitor.avatar}</div>
-                        <div class="visitor-info">
-                            <div class="visitor-name">${visitor.name}</div>
-                            <div class="visitor-id">${visitor.id.substr(0, 8)}</div>
+            users
+                .filter(u => u.id !== currentUser?.id && onlineUsers.has(u.id))
+                .forEach(user => {
+                    const div = document.createElement('div');
+                    div.className = 'friend-item';
+                    div.onclick = () => openChat(user);
+                    div.innerHTML = `
+                        <div class="friend-avatar">${user.avatar}</div>
+                        <div class="friend-info">
+                            <div class="friend-name">${user.username}</div>
+                            <div class="friend-status">🟢 متصل</div>
                         </div>
-                        <div class="visitor-online"></div>
                     `;
-                    
-                    container.appendChild(item);
+                    container.appendChild(div);
                 });
         }
 
-        // تحديث عداد الزوار
-        function updateVisitorCounter() {
-            const counter = document.getElementById('visitorCounter');
-            if (counter) {
-                counter.textContent = `عدد الزوار المتصلين: ${visitors.length}`;
-            }
+        // إنشاء منشور
+        function createPost() {
+            const content = document.getElementById('postContent').value.trim();
+            if (!content) return;
+
+            const post = {
+                id: generateId(),
+                userId: currentUser.id,
+                username: currentUser.username,
+                userAvatar: currentUser.avatar,
+                content: content,
+                timestamp: new Date().toISOString(),
+                likes: 0,
+                comments: 0
+            };
+
+            const tx = db.transaction(['posts'], 'readwrite');
+            tx.objectStore('posts').add(post);
+
+            document.getElementById('postContent').value = '';
+            loadPosts();
         }
 
-        // اختيار مستخدم للدردشة
-        function selectChatUser(user) {
-            currentChatUser = user;
-            document.getElementById('chatWith').textContent = `محادثة مع ${user.name}`;
-            document.getElementById('chatStatus').textContent = '🟢 متصل';
-            loadMessages(user.id);
+        // تحميل المنشورات
+        function loadPosts() {
+            const tx = db.transaction(['posts'], 'readonly');
+            const store = tx.objectStore('posts');
+            const index = store.index('timestamp');
+            const request = index.getAll();
+
+            request.onsuccess = () => {
+                posts = request.result.reverse(); // أحدث منشور أولاً
+                displayPosts();
+                document.getElementById('postsCount').textContent = posts.length + ' منشور';
+                
+                if (currentUser) {
+                    const userPosts = posts.filter(p => p.userId === currentUser.id).length;
+                    document.getElementById('userPostsCount').textContent = userPosts;
+                }
+            };
         }
 
-        // تحميل الرسائل
-        function loadMessages(userId) {
-            const container = document.getElementById('messagesContainer');
-            if (!container) return;
-            
+        // عرض المنشورات
+        function displayPosts() {
+            const container = document.getElementById('postsContainer');
             container.innerHTML = '';
 
-            // الحصول على معرف المحادثة بين المستخدمين
-            const chatId = getChatId(currentUser.id, userId);
-            
-            // ترتيب الرسائل حسب الوقت
-            const userMessages = (messages[chatId] || [])
-                .sort((a, b) => a.timestamp - b.timestamp);
-            
-            userMessages.forEach(msg => {
-                addMessageToContainer(
-                    msg.text,
-                    msg.sender === currentUser.id ? 'sent' : 'received',
-                    msg.senderName,
-                    new Date(msg.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
-                );
+            posts.slice(0, 20).forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'post-card';
+                div.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-avatar">${post.userAvatar}</div>
+                        <div>
+                            <div class="post-author">${post.username}</div>
+                            <div class="post-time">${new Date(post.timestamp).toLocaleString('ar-EG')}</div>
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-stats">
+                        <span class="post-stat" onclick="likePost('${post.id}')">❤️ ${post.likes}</span>
+                        <span class="post-stat" onclick="commentPost('${post.id}')">💬 ${post.comments}</span>
+                    </div>
+                `;
+                container.appendChild(div);
             });
-            
-            container.scrollTop = container.scrollHeight;
         }
 
-        // الحصول على معرف المحادثة
-        function getChatId(user1, user2) {
-            return [user1, user2].sort().join('_');
-        }
-
-        // إضافة رسالة إلى الحاوية
-        function addMessageToContainer(text, type, senderName, time) {
-            const container = document.getElementById('messagesContainer');
-            if (!container) return;
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            
-            if (type === 'received') {
-                messageDiv.innerHTML = `
-                    <div class="message-sender">${senderName}</div>
-                    ${text}
-                    <div class="message-time">${time}</div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    ${text}
-                    <div class="message-time">${time}</div>
-                `;
-            }
-            
-            container.appendChild(messageDiv);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // إرسال رسالة
-        function sendMessage() {
-            if (!currentChatUser) {
-                alert('الرجاء اختيار شخص للتحدث معه أولاً');
-                return;
-            }
-
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-
-            if (text) {
-                const chatId = getChatId(currentUser.id, currentChatUser.id);
-                
-                if (!messages[chatId]) {
-                    messages[chatId] = [];
+        // إعجاب بمنشور
+        function likePost(postId) {
+            const tx = db.transaction(['posts'], 'readwrite');
+            const store = tx.objectStore('posts');
+            store.get(parseInt(postId)).onsuccess = (e) => {
+                const post = e.target.result;
+                if (post) {
+                    post.likes++;
+                    store.put(post);
+                    loadPosts();
                 }
-
-                // إنشاء الرسالة
-                const message = {
-                    sender: currentUser.id,
-                    senderName: currentUser.name,
-                    text: text,
-                    timestamp: Date.now()
-                };
-
-                // حفظ الرسالة
-                messages[chatId].push(message);
-                
-                // حفظ في localStorage
-                saveData();
-
-                // عرض الرسالة
-                addMessageToContainer(
-                    text,
-                    'sent',
-                    currentUser.name,
-                    new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
-                );
-
-                input.value = '';
-            }
+            };
         }
 
-        // إرسال بالضغط على Enter
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+        // تحديث إحصائيات المستخدم
+        function loadStats() {
+            document.getElementById('usersCount').textContent = users.length + ' عضو';
+            
+            // حساب المتابعين والمتابعات (للبساطة نستخدم أرقاماً عشوائية)
+            document.getElementById('userFollowersCount').textContent = Math.floor(Math.random() * 100);
+            document.getElementById('userFollowingCount').textContent = Math.floor(Math.random() * 50);
         }
 
-        // معالجة إغلاق الصفحة
-        window.addEventListener('beforeunload', function() {
+        // تحديث اقتراحات المستخدمين
+        function updateSuggestedUsers() {
+            const container = document.getElementById('suggestedContainer');
+            container.innerHTML = '';
+
+            const suggested = users
+                .filter(u => u.id !== currentUser?.id)
+                .slice(0, 5);
+
+            suggested.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'suggested-item';
+                div.innerHTML = `
+                    <div class="suggested-avatar">${user.avatar}</div>
+                    <div class="suggested-info">
+                        <div class="suggested-name">${user.username}</div>
+                    </div>
+                    <button class="follow-btn" onclick="followUser('${user.id}')">متابعة</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // متابعة مستخدم
+        function followUser(userId) {
+            alert('تمت المتابعة بنجاح');
+        }
+
+        // فتح محادثة (يمكن تطويرها لاحقاً)
+        function openChat(user) {
+            alert(`فتح محادثة مع ${user.username} - قيد التطوير`);
+        }
+
+        // تحديث دوري
+        setInterval(() => {
             if (currentUser) {
-                removeVisitor(currentUser.id);
+                loadUsers();
+                loadPosts();
             }
-            if (updateInterval) {
-                clearInterval(updateInterval);
-            }
-        });
-
-        // تهيئة النظام
-        loadSavedData();
+        }, 5000);
     </script>
 </body>
 </html>
