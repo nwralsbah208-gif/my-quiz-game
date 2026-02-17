@@ -13,7 +13,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -426,15 +426,117 @@
     </div>
 
     <script>
+        // ============================================
+        // نظام واتساب المملكة - الإصدار الحقيقي
+        // ============================================
+
+        // استخدام localStorage لتخزين البيانات (يعمل عبر الأجهزة)
+        const STORAGE_KEY = 'lex_kingdom_whatsapp';
+        const VISITORS_KEY = 'lex_kingdom_visitors';
+        const MESSAGES_KEY = 'lex_kingdom_messages';
+
         // بيانات المستخدمين والرسائل
         let currentUser = null;
         let currentChatUser = null;
         let visitors = [];
         let messages = {};
+        let updateInterval = null;
+
+        // تحميل البيانات المحفوظة
+        function loadSavedData() {
+            // تحميل الزوار
+            const savedVisitors = localStorage.getItem(VISITORS_KEY);
+            if (savedVisitors) {
+                try {
+                    visitors = JSON.parse(savedVisitors);
+                    // تنظيف الزوار الذين انتهت صلاحيتهم
+                    const now = Date.now();
+                    visitors = visitors.filter(v => now - v.lastSeen < 30000); // 30 ثانية
+                } catch (e) {
+                    visitors = [];
+                }
+            }
+
+            // تحميل الرسائل
+            const savedMessages = localStorage.getItem(MESSAGES_KEY);
+            if (savedMessages) {
+                try {
+                    messages = JSON.parse(savedMessages);
+                } catch (e) {
+                    messages = {};
+                }
+            }
+        }
+
+        // حفظ البيانات
+        function saveData() {
+            localStorage.setItem(VISITORS_KEY, JSON.stringify(visitors));
+            localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+        }
 
         // إنشاء معرف فريد للمستخدم
         function generateUserId() {
             return 'USER-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // تحديث آخر ظهور للمستخدم
+        function updateUserLastSeen(userId) {
+            const user = visitors.find(v => v.id === userId);
+            if (user) {
+                user.lastSeen = Date.now();
+                saveData();
+            }
+        }
+
+        // إضافة زائر
+        function addVisitor(visitor) {
+            // إزالة أي زائر بنفس الاسم (إذا كان موجوداً)
+            visitors = visitors.filter(v => v.id !== visitor.id);
+            
+            // إضافة الزائر الجديد
+            visitor.lastSeen = Date.now();
+            visitors.push(visitor);
+            
+            // حفظ البيانات
+            saveData();
+            
+            // تحديث الواجهة
+            renderVisitors();
+            updateVisitorCounter();
+        }
+
+        // إزالة زائر
+        function removeVisitor(visitorId) {
+            visitors = visitors.filter(v => v.id !== visitorId);
+            saveData();
+            renderVisitors();
+            updateVisitorCounter();
+            
+            if (currentChatUser && currentChatUser.id === visitorId) {
+                currentChatUser = null;
+                document.getElementById('chatWith').textContent = 'اختر شخصاً للتحدث معه';
+                document.getElementById('chatStatus').textContent = '';
+            }
+        }
+
+        // تنظيف الزوار غير النشطين
+        function cleanupInactiveVisitors() {
+            const now = Date.now();
+            const beforeCount = visitors.length;
+            visitors = visitors.filter(v => now - v.lastSeen < 30000); // 30 ثانية
+            
+            if (visitors.length !== beforeCount) {
+                saveData();
+                renderVisitors();
+                updateVisitorCounter();
+                
+                // إذا كان المستخدم الحالي قد غادر
+                if (currentChatUser && !visitors.find(v => v.id === currentChatUser.id)) {
+                    currentChatUser = null;
+                    document.getElementById('chatWith').textContent = 'اختر شخصاً للتحدث معه';
+                    document.getElementById('chatStatus').textContent = '';
+                }
+            }
         }
 
         // الانضمام إلى المملكة
@@ -445,11 +547,15 @@
                 return;
             }
 
+            // تحميل البيانات المحفوظة
+            loadSavedData();
+
             // إنشاء مستخدم جديد
             currentUser = {
                 id: generateUserId(),
                 name: username,
-                avatar: username.charAt(0).toUpperCase()
+                avatar: username.charAt(0).toUpperCase(),
+                lastSeen: Date.now()
             };
 
             // إخفاء نافذة تسجيل الدخول
@@ -463,43 +569,37 @@
             // إضافة المستخدم إلى قائمة الزوار
             addVisitor(currentUser);
 
-            // بدء محاكاة وصول زوار جدد
-            simulateNewVisitors();
-
-            // تحديث عداد الزوار كل ثانية
-            setInterval(updateVisitorCounter, 1000);
-        }
-
-        // إضافة زائر
-        function addVisitor(visitor) {
-            if (!visitors.find(v => v.id === visitor.id)) {
-                visitors.push(visitor);
-                renderVisitors();
-                updateVisitorCounter();
-                
-                // إنشاء مجلد رسائل للزائر الجديد
-                if (!messages[visitor.id]) {
-                    messages[visitor.id] = [];
-                }
-            }
-        }
-
-        // إزالة زائر
-        function removeVisitor(visitorId) {
-            visitors = visitors.filter(v => v.id !== visitorId);
-            renderVisitors();
-            updateVisitorCounter();
+            // بدء تحديثات دورية
+            if (updateInterval) clearInterval(updateInterval);
             
-            if (currentChatUser && currentChatUser.id === visitorId) {
-                currentChatUser = null;
-                document.getElementById('chatWith').textContent = 'اختر شخصاً للتحدث معه';
-                document.getElementById('chatStatus').textContent = '';
-            }
+            // تحديث آخر ظهور كل 5 ثواني
+            updateInterval = setInterval(() => {
+                if (currentUser) {
+                    updateUserLastSeen(currentUser.id);
+                }
+                cleanupInactiveVisitors();
+            }, 5000);
+
+            // تحديث قائمة الزوار كل ثانية
+            setInterval(() => {
+                if (currentUser) {
+                    loadSavedData();
+                    renderVisitors();
+                    updateVisitorCounter();
+                    
+                    // إعادة تحميل الرسائل إذا كنا في محادثة
+                    if (currentChatUser) {
+                        loadMessages(currentChatUser.id);
+                    }
+                }
+            }, 1000);
         }
 
         // عرض قائمة الزوار
         function renderVisitors() {
             const container = document.getElementById('visitorsContainer');
+            if (!container) return;
+            
             container.innerHTML = '';
 
             visitors
@@ -524,7 +624,10 @@
 
         // تحديث عداد الزوار
         function updateVisitorCounter() {
-            document.getElementById('visitorCounter').textContent = `عدد الزوار المتصلين: ${visitors.length}`;
+            const counter = document.getElementById('visitorCounter');
+            if (counter) {
+                counter.textContent = `عدد الزوار المتصلين: ${visitors.length}`;
+            }
         }
 
         // اختيار مستخدم للدردشة
@@ -538,19 +641,36 @@
         // تحميل الرسائل
         function loadMessages(userId) {
             const container = document.getElementById('messagesContainer');
+            if (!container) return;
+            
             container.innerHTML = '';
 
-            const userMessages = messages[userId] || [];
+            // ترتيب الرسائل حسب الوقت
+            const userMessages = (messages[getChatId(currentUser.id, userId)] || [])
+                .sort((a, b) => a.timestamp - b.timestamp);
+            
             userMessages.forEach(msg => {
-                addMessageToContainer(msg.text, msg.sender === currentUser.id ? 'sent' : 'received', msg.senderName, msg.time);
+                addMessageToContainer(
+                    msg.text,
+                    msg.sender === currentUser.id ? 'sent' : 'received',
+                    msg.senderName,
+                    new Date(msg.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+                );
             });
             
             container.scrollTop = container.scrollHeight;
         }
 
+        // الحصول على معرف المحادثة
+        function getChatId(user1, user2) {
+            return [user1, user2].sort().join('_');
+        }
+
         // إضافة رسالة إلى الحاوية
         function addMessageToContainer(text, type, senderName, time) {
             const container = document.getElementById('messagesContainer');
+            if (!container) return;
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             
@@ -582,61 +702,35 @@
             const text = input.value.trim();
 
             if (text) {
-                const now = new Date();
-                const time = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-
-                // حفظ الرسالة
-                if (!messages[currentChatUser.id]) {
-                    messages[currentChatUser.id] = [];
-                }
+                const chatId = getChatId(currentUser.id, currentChatUser.id);
                 
-                messages[currentChatUser.id].push({
+                if (!messages[chatId]) {
+                    messages[chatId] = [];
+                }
+
+                // إنشاء الرسالة
+                const message = {
                     sender: currentUser.id,
                     senderName: currentUser.name,
                     text: text,
-                    time: time
-                });
+                    timestamp: Date.now()
+                };
+
+                // حفظ الرسالة
+                messages[chatId].push(message);
+                
+                // حفظ في localStorage
+                saveData();
 
                 // عرض الرسالة
-                addMessageToContainer(text, 'sent', currentUser.name, time);
-
-                // محاكاة رد تلقائي (اختياري)
-                setTimeout(() => {
-                    simulateReply(currentChatUser);
-                }, 2000);
+                addMessageToContainer(
+                    text,
+                    'sent',
+                    currentUser.name,
+                    new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+                );
 
                 input.value = '';
-            }
-        }
-
-        // محاكاة رد
-        function simulateReply(user) {
-            const now = new Date();
-            const time = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-            
-            const replies = [
-                'مرحباً، كيف حالك؟',
-                'تسلم على الرسالة',
-                'نعم يا صديقي',
-                'تحت أمرك',
-                'شكراً لك'
-            ];
-            
-            const reply = replies[Math.floor(Math.random() * replies.length)];
-            
-            if (!messages[user.id]) {
-                messages[user.id] = [];
-            }
-            
-            messages[user.id].push({
-                sender: user.id,
-                senderName: user.name,
-                text: reply,
-                time: time
-            });
-            
-            if (currentChatUser && currentChatUser.id === user.id) {
-                addMessageToContainer(reply, 'received', user.name, time);
             }
         }
 
@@ -647,39 +741,18 @@
             }
         }
 
-        // محاكاة وصول زوار جدد
-        function simulateNewVisitors() {
-            const names = ['محارب', 'فارس', 'حارس', 'سيف', 'رمح', 'درع', 'نبال', 'فتى'];
-            
-            setInterval(() => {
-                if (Math.random() > 0.7) { // 30% فرصة لوصول زائر جديد
-                    const randomName = names[Math.floor(Math.random() * names.length)] + Math.floor(Math.random() * 100);
-                    const newVisitor = {
-                        id: generateUserId(),
-                        name: randomName,
-                        avatar: randomName.charAt(0).toUpperCase()
-                    };
-                    addVisitor(newVisitor);
-                }
-            }, 10000); // كل 10 ثواني
-
-            // محاكاة مغادرة زوار
-            setInterval(() => {
-                if (visitors.length > 1 && Math.random() > 0.8) { // 20% فرصة لمغادرة زائر
-                    const randomVisitor = visitors.find(v => v.id !== currentUser?.id);
-                    if (randomVisitor) {
-                        removeVisitor(randomVisitor.id);
-                    }
-                }
-            }, 15000); // كل 15 ثانية
-        }
-
         // معالجة إغلاق الصفحة
         window.addEventListener('beforeunload', function() {
             if (currentUser) {
                 removeVisitor(currentUser.id);
             }
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
         });
+
+        // تهيئة النظام
+        loadSavedData();
     </script>
 </body>
 </html>
