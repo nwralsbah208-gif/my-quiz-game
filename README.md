@@ -430,7 +430,7 @@
         // نظام واتساب المملكة - الإصدار الحقيقي
         // ============================================
 
-        // استخدام localStorage لتخزين البيانات (يعمل عبر الأجهزة)
+        // استخدام localStorage لتخزين البيانات (يعبر الأجهزة)
         const STORAGE_KEY = 'lex_kingdom_whatsapp';
         const VISITORS_KEY = 'lex_kingdom_visitors';
         const MESSAGES_KEY = 'lex_kingdom_messages';
@@ -449,9 +449,9 @@
             if (savedVisitors) {
                 try {
                     visitors = JSON.parse(savedVisitors);
-                    // تنظيف الزوار الذين انتهت صلاحيتهم
+                    // تنظيف الزوار الذين انتهت صلاحيتهم (أكثر من 30 ثانية)
                     const now = Date.now();
-                    visitors = visitors.filter(v => now - v.lastSeen < 30000); // 30 ثانية
+                    visitors = visitors.filter(v => now - v.lastSeen < 30000);
                 } catch (e) {
                     visitors = [];
                 }
@@ -645,8 +645,11 @@
             
             container.innerHTML = '';
 
+            // الحصول على معرف المحادثة بين المستخدمين
+            const chatId = getChatId(currentUser.id, userId);
+            
             // ترتيب الرسائل حسب الوقت
-            const userMessages = (messages[getChatId(currentUser.id, userId)] || [])
+            const userMessages = (messages[chatId] || [])
                 .sort((a, b) => a.timestamp - b.timestamp);
             
             userMessages.forEach(msg => {
