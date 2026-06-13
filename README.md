@@ -1,868 +1,906 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شبكة LEX-Ω الاجتماعية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Level Devil – رتيرو قديم + مؤثرات صوتية + رسوم HD</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #0a0a0a, #1a0a1a);
             min-height: 100vh;
-        }
-
-        /* الهيدر الملكي */
-        .royal-header {
-            background: linear-gradient(135deg, #000 0%, #1a0a0a 100%);
-            border-bottom: 3px solid #FFD700;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .kingdom-title {
-            font-size: 48px;
-            font-weight: 900;
-            color: #FFD700;
-            text-shadow: 0 0 20px #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .kingdom-subtitle {
-            color: #fff;
-            opacity: 0.8;
-            margin-bottom: 15px;
-        }
-
-        .stats-bar {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 15px;
-        }
-
-        .stat-item {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid #FFD700;
-        }
-
-        /* الحاوية الرئيسية */
-        .main-container {
-            display: grid;
-            grid-template-columns: 300px 1fr 300px;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* الشريط الجانبي الأيمن */
-        .right-sidebar {
-            background: rgba(255, 215, 0, 0.05);
-            border: 2px solid #FFD700;
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-        .user-profile {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .user-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #FFD700, #8B0000);
-            border-radius: 50%;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            margin: 0 auto 15px;
-            border: 3px solid #FFD700;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            touch-action: none;
         }
 
-        .user-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #FFD700;
-            margin-bottom: 5px;
+        /* تأثير خلفية متحركة */
+        @keyframes bgPulse {
+            0% { background: rgba(0,0,0,0.3); }
+            100% { background: rgba(255,0,0,0.05); }
         }
 
-        .user-bio {
-            color: #ccc;
-            font-size: 14px;
-            margin-bottom: 15px;
-            padding: 0 10px;
-        }
-
-        .user-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            margin-bottom: 20px;
-        }
-
-        .user-stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 20px;
-            font-weight: bold;
-            color: #FFD700;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #ccc;
-        }
-
-        .online-friends {
-            margin-top: 20px;
-        }
-
-        .online-title {
-            color: #FFD700;
-            font-size: 18px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #FFD700;
-        }
-
-        .friend-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid #333;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .friend-item:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: #FFD700;
-        }
-
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            background: #333;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 10px;
-            font-weight: bold;
-        }
-
-        .friend-info {
-            flex: 1;
-        }
-
-        .friend-name {
-            font-weight: bold;
-            color: #FFD700;
-        }
-
-        .friend-status {
-            font-size: 11px;
-            color: #00ff00;
-        }
-
-        /* منطقة المحتوى الرئيسي */
-        .main-content {
-            background: rgba(255, 215, 0, 0.05);
-            border: 2px solid #FFD700;
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-        .create-post {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .post-input {
-            width: 100%;
-            min-height: 100px;
-            background: #222;
-            border: 2px solid #FFD700;
-            border-radius: 15px;
-            padding: 15px;
-            color: #fff;
-            font-size: 16px;
-            margin-bottom: 15px;
-            resize: vertical;
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .post-btn {
-            padding: 10px 25px;
-            background: linear-gradient(135deg, #FFD700, #8B0000);
-            border: none;
-            border-radius: 30px;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .post-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .posts-container {
+        .game-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-        }
-
-        .post-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid #333;
-            border-radius: 15px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
-
-        .post-card:hover {
-            border-color: #FFD700;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .post-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #FFD700, #8B0000);
-            border-radius: 50%;
-            display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-left: 15px;
-        }
-
-        .post-author {
-            font-weight: bold;
-            color: #FFD700;
-            margin-bottom: 5px;
-        }
-
-        .post-time {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .post-content {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .post-stats {
-            display: flex;
-            gap: 20px;
-            padding: 10px 0;
-            border-top: 1px solid #333;
-        }
-
-        .post-stat {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #ccc;
-            cursor: pointer;
-        }
-
-        .post-stat:hover {
-            color: #FFD700;
-        }
-
-        /* الشريط الجانبي الأيسر */
-        .left-sidebar {
-            background: rgba(255, 215, 0, 0.05);
-            border: 2px solid #FFD700;
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-        .trending-title {
-            color: #FFD700;
-            font-size: 18px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #FFD700;
-        }
-
-        .trending-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid #333;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .trending-item:hover {
-            border-color: #FFD700;
-        }
-
-        .trending-hashtag {
-            color: #FFD700;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .trending-count {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .suggested-friends {
-            margin-top: 30px;
-        }
-
-        .suggested-title {
-            color: #FFD700;
-            font-size: 18px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #FFD700;
-        }
-
-        .suggested-item {
-            display: flex;
-            align-items: center;
             padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid #333;
-            border-radius: 10px;
+            width: 100%;
+            max-width: 100%;
         }
 
-        .suggested-avatar {
-            width: 40px;
-            height: 40px;
-            background: #333;
-            border-radius: 50%;
+        .game-container {
+            background: #000000aa;
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: 0 0 50px rgba(255,0,0,0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,0,0,0.3);
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 0 30px rgba(255,0,0,0.3);
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            touch-action: none;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            color: #ff4444;
+            text-shadow: 0 0 5px red;
+            font-weight: bold;
+            background: #1a0a1aaa;
+            border-radius: 10px;
+            margin: 10px 0;
+            backdrop-filter: blur(5px);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .level-badge {
+            font-size: 1.2rem;
+            background: #330000;
+            padding: 5px 12px;
+            border-radius: 30px;
+            border: 1px solid #ff0000;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+
+        .deaths-badge {
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        button {
+            background: #330000;
+            border: 1px solid #ff4444;
+            color: #ff8888;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+            touch-action: manipulation;
+        }
+
+        button:active {
+            background: #660000;
+            color: white;
+            box-shadow: 0 0 10px red;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+            gap: 12px;
+        }
+
+        .horizontal-controls {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .ctrl-btn {
+            width: 70px;
+            height: 70px;
+            background: rgba(30, 0, 0, 0.85);
+            border: 2px solid #ff0000;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: 10px;
-        }
-
-        .suggested-info {
-            flex: 1;
-        }
-
-        .suggested-name {
+            font-size: 2.5rem;
             font-weight: bold;
-            color: #FFD700;
+            color: #ff4444;
+            text-shadow: 0 0 5px red;
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            transition: all 0.05s linear;
+            touch-action: manipulation;
+            box-shadow: 0 0 15px rgba(255,0,0,0.3);
         }
 
-        .follow-btn {
-            padding: 5px 15px;
-            background: transparent;
-            border: 1px solid #FFD700;
-            border-radius: 20px;
-            color: #FFD700;
-            cursor: pointer;
+        .ctrl-btn:active {
+            background: #ff0000;
+            color: white;
+            transform: scale(0.92);
+            box-shadow: 0 0 25px red;
+        }
+
+        .jump-btn {
+            width: 100px;
+            height: 70px;
+            background: rgba(80, 0, 0, 0.9);
+            border: 3px solid #ff6600;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffaa44;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .action-btn {
+            width: 80px;
+            height: 50px;
+            background: rgba(30, 0, 0, 0.85);
+            border: 2px solid #ff4444;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ff8888;
+            backdrop-filter: blur(8px);
+            touch-action: manipulation;
+        }
+
+        .action-btn:active {
+            background: #660000;
+            transform: scale(0.95);
+        }
+
+        .whisper {
+            margin-top: 12px;
+            color: #ff000033;
+            font-size: 10px;
+            font-style: italic;
+            text-align: center;
             transition: all 0.3s;
         }
 
-        .follow-btn:hover {
-            background: #FFD700;
-            color: #000;
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            10%,30%,50%,70%,90% { transform: translateX(-3px); }
+            20%,40%,60%,80% { transform: translateX(3px); }
         }
 
-        /* نافذة تسجيل الدخول */
-        .login-overlay {
+        .shake-effect {
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
+
+        @media (max-width: 600px) {
+            .ctrl-btn { width: 60px; height: 60px; font-size: 2rem; }
+            .jump-btn { width: 85px; height: 60px; font-size: 1.3rem; }
+            .action-btn { width: 70px; height: 45px; font-size: 0.85rem; }
+        }
+
+        /* مؤشر الصوت */
+        .sound-indicator {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            backdrop-filter: blur(10px);
-        }
-
-        .login-box {
-            background: linear-gradient(135deg, #1a1a1a, #000);
-            border: 3px solid #FFD700;
-            border-radius: 30px;
-            padding: 40px;
-            width: 400px;
-            text-align: center;
-            box-shadow: 0 0 100px rgba(255, 215, 0, 0.3);
-        }
-
-        .login-title {
-            font-size: 32px;
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .login-subtitle {
-            color: #fff;
-            margin-bottom: 30px;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            background: #222;
-            border: 2px solid #FFD700;
-            border-radius: 30px;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #FFD700, #8B0000);
-            border: none;
-            border-radius: 30px;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .login-btn:hover {
-            transform: scale(1.05);
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 10px;
+            color: #ff8888;
+            font-family: monospace;
+            z-index: 200;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <!-- نافذة تسجيل الدخول -->
-    <div id="loginOverlay" class="login-overlay">
-        <div class="login-box">
-            <div class="login-title">👑 شبكة LEX-Ω</div>
-            <div class="login-subtitle">انضم إلى المملكة الآن</div>
-            <input type="text" id="usernameInput" class="login-input" placeholder="اسم المستخدم" maxlength="30">
-            <input type="text" id="bioInput" class="login-input" placeholder="نبذة عنك (اختياري)" maxlength="100">
-            <button class="login-btn" onclick="joinNetwork()">انضمام</button>
+
+<div class="game-wrapper">
+    <div class="game-container">
+        <canvas id="gameCanvas" width="750" height="450"></canvas>
+        <div class="info-panel">
+            <span class="level-badge" id="levelDisplay">🩸 الطابق 1</span>
+            <span class="deaths-badge" id="deathsDisplay">💀 الموت: 0</span>
+            <button id="resetBtn">🔄 استعد</button>
         </div>
     </div>
 
-    <!-- واجهة الشبكة الاجتماعية (مخفية في البداية) -->
-    <div id="networkInterface" style="display: none;">
-        <div class="royal-header">
-            <div class="kingdom-title">👑 شبكة LEX-Ω الاجتماعية 👑</div>
-            <div class="kingdom-subtitle">حيث يلتقي جنود المملكة</div>
-            <div class="stats-bar">
-                <div class="stat-item" id="usersCount">0 عضو</div>
-                <div class="stat-item" id="postsCount">0 منشور</div>
-                <div class="stat-item" id="onlineCount">0 متصل</div>
-            </div>
+    <div class="controls">
+        <div class="horizontal-controls">
+            <div class="ctrl-btn" data-key="ArrowLeft">◀</div>
+            <div class="ctrl-btn jump-btn" id="jumpButton">▲ قفز</div>
+            <div class="ctrl-btn" data-key="ArrowRight">▶</div>
         </div>
-
-        <div class="main-container">
-            <!-- الشريط الجانبي الأيمن - الملف الشخصي -->
-            <div class="right-sidebar">
-                <div class="user-profile">
-                    <div class="user-avatar" id="userAvatar">👤</div>
-                    <div class="user-name" id="displayUsername"></div>
-                    <div class="user-bio" id="userBio"></div>
-                    <div class="user-stats">
-                        <div class="user-stat">
-                            <div class="stat-number" id="userPostsCount">0</div>
-                            <div class="stat-label">منشورات</div>
-                        </div>
-                        <div class="user-stat">
-                            <div class="stat-number" id="userFollowersCount">0</div>
-                            <div class="stat-label">متابعون</div>
-                        </div>
-                        <div class="user-stat">
-                            <div class="stat-number" id="userFollowingCount">0</div>
-                            <div class="stat-label">يتابع</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="online-friends">
-                    <div class="online-title">🟢 المتصلون الآن</div>
-                    <div id="onlineUsersList"></div>
-                </div>
-            </div>
-
-            <!-- المنطقة الرئيسية - المنشورات -->
-            <div class="main-content">
-                <div class="create-post">
-                    <textarea id="postContent" class="post-input" placeholder="ما الذي يجول في خاطرك يا جندي؟"></textarea>
-                    <div class="post-actions">
-                        <button class="post-btn" onclick="createPost()">نشر</button>
-                    </div>
-                </div>
-
-                <div class="posts-container" id="postsContainer">
-                    <!-- المنشورات ستظهر هنا -->
-                </div>
-            </div>
-
-            <!-- الشريط الجانبي الأيسر - مقترحات وترند -->
-            <div class="left-sidebar">
-                <div class="trending-title">🔥 الأكثر تفاعلاً</div>
-                <div id="trendingContainer"></div>
-
-                <div class="suggested-friends">
-                    <div class="suggested-title">👥 اقتراحات متابعة</div>
-                    <div id="suggestedContainer"></div>
-                </div>
-            </div>
+        <div class="action-buttons">
+            <div class="action-btn" id="mobileReset">💀 استشهد واعد</div>
         </div>
     </div>
+    <div class="whisper" id="whisperText">☠️ موسيقى رتيرو + مؤثرات صوتية كلاسيكية... ☠️</div>
+    <div class="sound-indicator" id="soundIndicator">🔊 صوت: نشط</div>
+</div>
 
-    <script>
-        // ============================================
-        // شبكة LEX-Ω الاجتماعية - الإصدار الحقيقي
-        // ============================================
-
-        // استخدام IndexedDB للتخزين المحلي (يعمل بدون إنترنت)
-        let db;
-        let currentUser = null;
-        let users = [];
-        let posts = [];
-        let onlineUsers = new Set();
-
-        // إنشاء قاعدة البيانات
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('LexNetworkDB', 1);
-                
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    
-                    // جدول المستخدمين
-                    if (!db.objectStoreNames.contains('users')) {
-                        const userStore = db.createObjectStore('users', { keyPath: 'id' });
-                        userStore.createIndex('username', 'username', { unique: true });
-                    }
-                    
-                    // جدول المنشورات
-                    if (!db.objectStoreNames.contains('posts')) {
-                        const postStore = db.createObjectStore('posts', { keyPath: 'id', autoIncrement: true });
-                        postStore.createIndex('timestamp', 'timestamp');
-                        postStore.createIndex('userId', 'userId');
-                    }
-                    
-                    // جدول المتابعات
-                    if (!db.objectStoreNames.contains('follows')) {
-                        db.createObjectStore('follows', { keyPath: 'id', autoIncrement: true });
-                    }
-                };
-            });
-        }
-
-        // إنشاء معرف فريد
-        function generateId() {
-            return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        }
-
-        // الانضمام إلى الشبكة
-        async function joinNetwork() {
-            const username = document.getElementById('usernameInput').value.trim();
-            const bio = document.getElementById('bioInput').value.trim() || 'جندي في مملكة LEX-Ω';
-
-            if (!username) {
-                alert('الرجاء إدخال اسم المستخدم');
-                return;
-            }
-
-            await initDB();
-
-            // التحقق من عدم تكرار الاسم
-            const transaction = db.transaction(['users'], 'readonly');
-            const store = transaction.objectStore('users');
-            const index = store.index('username');
-            const existingUser = await new Promise((resolve) => {
-                const request = index.get(username);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => resolve(null);
-            });
-
-            if (existingUser) {
-                alert('اسم المستخدم موجود بالفعل، اختر اسماً آخر');
-                return;
-            }
-
-            // إنشاء مستخدم جديد
-            currentUser = {
-                id: generateId(),
-                username: username,
-                bio: bio,
-                avatar: username.charAt(0).toUpperCase(),
-                joinDate: new Date().toISOString(),
-                lastSeen: new Date().toISOString()
-            };
-
-            // حفظ المستخدم
-            const writeTx = db.transaction(['users'], 'readwrite');
-            writeTx.objectStore('users').add(currentUser);
-
-            // إخفاء نافذة تسجيل الدخول
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('networkInterface').style.display = 'block';
-
-            // عرض معلومات المستخدم
-            document.getElementById('displayUsername').textContent = currentUser.username;
-            document.getElementById('userBio').textContent = currentUser.bio;
-            document.getElementById('userAvatar').textContent = currentUser.avatar;
-
-            // إضافة المستخدم إلى المتصلين
-            onlineUsers.add(currentUser.id);
-            updateOnlineUsers();
-
-            // تحميل البيانات
-            loadUsers();
-            loadPosts();
-            loadStats();
-
-            // تحديث آخر ظهور كل 30 ثانية
-            setInterval(() => {
-                if (currentUser) {
-                    const tx = db.transaction(['users'], 'readwrite');
-                    const store = tx.objectStore('users');
-                    store.get(currentUser.id).onsuccess = (e) => {
-                        const user = e.target.result;
-                        if (user) {
-                            user.lastSeen = new Date().toISOString();
-                            store.put(user);
-                        }
-                    };
-                }
-            }, 30000);
-        }
-
-        // تحميل المستخدمين
-        function loadUsers() {
-            const tx = db.transaction(['users'], 'readonly');
-            const store = tx.objectStore('users');
-            const request = store.getAll();
-
-            request.onsuccess = () => {
-                users = request.result;
-                updateOnlineUsers();
-                updateSuggestedUsers();
-            };
-        }
-
-        // تحديث قائمة المتصلين
-        function updateOnlineUsers() {
-            const now = Date.now();
-            const fiveMinutes = 5 * 60 * 1000;
+<script>
+    (function(){
+        // ----- مملكة LEX-Ω: لعبة رتيرو مع موسيقى وأصوات ورسوم محسّنة -----
+        
+        // ========== إعدادات الصوت ==========
+        // نصنع AudioContext فقط عند أول تفاعل (لأن المتصفحات تمنع الصوت التلقائي)
+        let audioCtx = null;
+        let bgMusicInterval = null;
+        let isAudioEnabled = false;
+        let walkSoundInterval = null;
+        let lastWalkX = 50;
+        
+        // دالة لتشغيل الصوت (يتم استدعاؤها عند أول لمسة أو زر)
+        function initAudio() {
+            if(audioCtx !== null && isAudioEnabled) return;
             
-            onlineUsers.clear();
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // نلعب نغمة ترحيب قصيرة جدًا (لتفعيل الصوت)
+                const oscillator = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                oscillator.connect(gain);
+                gain.connect(audioCtx.destination);
+                oscillator.frequency.value = 440;
+                gain.gain.value = 0.05;
+                oscillator.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+                
+                isAudioEnabled = true;
+                document.getElementById('soundIndicator').innerHTML = "🔊 موسيقى رتيرو: نشطة";
+                startBackgroundMusic();
+            } catch(e) {
+                console.log("صوت غير مدعوم");
+                document.getElementById('soundIndicator').innerHTML = "🔇 صوت غير متاح";
+            }
+        }
+        
+        // موسيقى خلفية على الطراز القديم (نغمات 8-bit متكررة)
+        function startBackgroundMusic() {
+            if(!audioCtx || !isAudioEnabled) return;
+            if(bgMusicInterval) clearInterval(bgMusicInterval);
             
-            users.forEach(user => {
-                if (user.id !== currentUser?.id) {
-                    const lastSeen = new Date(user.lastSeen).getTime();
-                    if (now - lastSeen < fiveMinutes) {
-                        onlineUsers.add(user.id);
+            let noteIndex = 0;
+            const notes = [261.63, 293.66, 329.63, 261.63, 329.63, 293.66, 261.63, 220.00]; // نغمات رتيرو
+            const noteDurations = [0.3, 0.3, 0.3, 0.6, 0.3, 0.3, 0.3, 0.8];
+            
+            function playNote() {
+                if(!audioCtx || !isAudioEnabled) return;
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'square'; // صوت ألعاب قديم
+                osc.frequency.value = notes[noteIndex % notes.length];
+                gain.gain.value = 0.08;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + noteDurations[noteIndex % noteDurations.length]);
+                osc.stop(now + noteDurations[noteIndex % noteDurations.length]);
+                noteIndex++;
+            }
+            
+            bgMusicInterval = setInterval(() => {
+                if(gameRunning && !winMode && !levelTransition && isAudioEnabled) {
+                    playNote();
+                }
+            }, 800);
+        }
+        
+        function stopBackgroundMusic() {
+            if(bgMusicInterval) {
+                clearInterval(bgMusicInterval);
+                bgMusicInterval = null;
+            }
+        }
+        
+        // صوت القفز
+        function playJumpSound() {
+            if(!audioCtx || !isAudioEnabled) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = 800;
+            gain.gain.value = 0.15;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.2);
+            osc.stop(now + 0.2);
+        }
+        
+        // صوت المشي (خطوات)
+        function playWalkSound() {
+            if(!audioCtx || !isAudioEnabled) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.value = 200 + Math.random() * 50;
+            gain.gain.value = 0.05;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.08);
+            osc.stop(now + 0.08);
+        }
+        
+        // صوت الموت
+        function playDeathSound() {
+            if(!audioCtx || !isAudioEnabled) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sawtooth';
+            osc.frequency.value = 300;
+            gain.gain.value = 0.2;
+            osc.start();
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.4);
+            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.5);
+            osc.stop(now + 0.5);
+        }
+        
+        // صوت الفوز
+        function playWinSound() {
+            if(!audioCtx || !isAudioEnabled) return;
+            const now = audioCtx.currentTime;
+            for(let i = 0; i < 3; i++) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = 440 + i * 100;
+                gain.gain.value = 0.1;
+                osc.start(now + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + i * 0.1 + 0.3);
+                osc.stop(now + i * 0.1 + 0.3);
+            }
+        }
+        
+        // ========== إعدادات اللعبة ==========
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const PLAYER_SIZE = 24;
+        let player = {
+            x: 50,
+            y: 0,
+            vy: 0,
+            isOnGround: true
+        };
+        
+        const GRAVITY = 0.8;
+        const JUMP_POWER = -13;
+        const GROUND_Y = canvas.height - 48;
+        
+        let traps = [];
+        let enemies = [];
+        let exitDoor = { x: canvas.width - 85, y: GROUND_Y - 10, width: 40, height: 42 };
+        
+        let fakeDoors = [];
+        let flashingTraps = [];
+        let frameCounter = 0;
+        
+        let currentLevel = 1;
+        let deaths = 0;
+        let gameRunning = true;
+        let winMode = false;
+        let levelTransition = false;
+        
+        const keys = { ArrowLeft: false, ArrowRight: false };
+        let jumpRequested = false;
+        let canJump = true;
+        
+        // متغير لصوت المشي
+        let lastPlayerX = 50;
+        
+        const whispers = [
+            "☠️ موسيقى الرتيرو تعزف... ☠️",
+            "👁️ اسمع الخطوات... كلاسيكي... 👁️",
+            "🔥 القفز له صوته الخاص... 🔥"
+        ];
+        
+        // ----- المستويات -----
+        function loadLevel(level) {
+            traps = [];
+            enemies = [];
+            fakeDoors = [];
+            flashingTraps = [];
+            winMode = false;
+            levelTransition = false;
+            gameRunning = true;
+            frameCounter = 0;
+            
+            if(level >= 1) {
+                traps.push({ x: 130, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                traps.push({ x: 260, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                traps.push({ x: 390, y: GROUND_Y - 8, w: 30, h: 12, type: 'spike', active: true });
+                traps.push({ x: 520, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                exitDoor = { x: canvas.width - 85, y: GROUND_Y - 10, width: 40, height: 42 };
+            }
+            
+            if(level >= 2) {
+                traps.push({ x: 100, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                traps.push({ x: 250, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                traps.push({ x: 400, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                traps.push({ x: 550, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                
+                for(let i=0; i<2; i++) {
+                    enemies.push({ x: 180 + i*200, y: GROUND_Y - 20, size: 18, type: 'fireball', vx: (i%2===0?1.0:-1.0), ground: GROUND_Y - 20 });
+                }
+                exitDoor = { x: canvas.width - 85, y: GROUND_Y - 10, width: 40, height: 42 };
+            }
+            
+            if(level >= 3) {
+                enemies.push({ x: 180, y: GROUND_Y - 28, size: 26, type: 'ghost', vx: 0.6, followsPlayer: false, ground: GROUND_Y - 28 });
+                enemies.push({ x: 420, y: GROUND_Y - 28, size: 26, type: 'ghost', vx: 0.5, followsPlayer: false, ground: GROUND_Y - 28 });
+                exitDoor = { x: canvas.width - 85, y: GROUND_Y - 10, width: 40, height: 42 };
+            }
+            
+            if(level >= 4) {
+                traps.push({ x: 300, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                traps.push({ x: 550, y: GROUND_Y - 8, w: 28, h: 12, type: 'spike', active: true });
+                fakeDoors.push({ x: 160, y: GROUND_Y - 12, width: 35, height: 40, active: true });
+                exitDoor = { x: canvas.width - 85, y: GROUND_Y - 10, width: 40, height: 42 };
+            }
+            
+            if(level >= 5) {
+                for(let i=0; i<3; i++) {
+                    flashingTraps.push({ x: 130 + i*150, y: GROUND_Y - 8, w: 30, h: 12, visible: true, timer: i * 20 });
+                }
+                enemies.push({ x: 400, y: GROUND_Y - 28, size: 26, type: 'ghost', vx: 0.5, followsPlayer: false, ground: GROUND_Y - 28 });
+                exitDoor = { x: canvas.width - 85, y: GROUND_Y - 10, width: 40, height: 42 };
+            }
+            
+            player.x = 45;
+            player.y = GROUND_Y - PLAYER_SIZE;
+            player.vy = 0;
+            player.isOnGround = true;
+            canJump = true;
+            lastPlayerX = player.x;
+        }
+        
+        function updateFlashingTraps() {
+            frameCounter++;
+            for(let i=0; i<flashingTraps.length; i++) {
+                let trap = flashingTraps[i];
+                if(frameCounter % 40 < 20) trap.visible = true;
+                else trap.visible = false;
+            }
+        }
+        
+        function applyGravity() {
+            if(!gameRunning || winMode || levelTransition) return;
+            
+            player.vy += GRAVITY;
+            player.y += player.vy;
+            
+            if(player.y + PLAYER_SIZE >= GROUND_Y) {
+                player.y = GROUND_Y - PLAYER_SIZE;
+                player.vy = 0;
+                player.isOnGround = true;
+                canJump = true;
+            } else {
+                player.isOnGround = false;
+            }
+            
+            if(player.y < 30) {
+                player.y = 30;
+                if(player.vy < 0) player.vy = 0;
+            }
+            
+            if(jumpRequested && player.isOnGround && canJump && gameRunning && !winMode && !levelTransition) {
+                player.vy = JUMP_POWER;
+                player.isOnGround = false;
+                canJump = false;
+                jumpRequested = false;
+                playJumpSound(); // تشغيل صوت القفز
+                setTimeout(() => { if(player.isOnGround) canJump = true; }, 150);
+            }
+        }
+        
+        function checkCollisions() {
+            if(winMode || levelTransition) return false;
+            
+            for(let trap of flashingTraps) {
+                if(trap.visible) {
+                    if(player.x < trap.x + trap.w && player.x + PLAYER_SIZE > trap.x &&
+                       player.y + PLAYER_SIZE > trap.y && player.y < trap.y + trap.h) {
+                        die();
+                        return true;
                     }
                 }
-            });
-
-            displayOnlineUsers();
-            document.getElementById('onlineCount').textContent = onlineUsers.size + ' متصل';
-        }
-
-        // عرض المتصلين
-        function displayOnlineUsers() {
-            const container = document.getElementById('onlineUsersList');
-            container.innerHTML = '';
-
-            users
-                .filter(u => u.id !== currentUser?.id && onlineUsers.has(u.id))
-                .forEach(user => {
-                    const div = document.createElement('div');
-                    div.className = 'friend-item';
-                    div.onclick = () => openChat(user);
-                    div.innerHTML = `
-                        <div class="friend-avatar">${user.avatar}</div>
-                        <div class="friend-info">
-                            <div class="friend-name">${user.username}</div>
-                            <div class="friend-status">🟢 متصل</div>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-        }
-
-        // إنشاء منشور
-        function createPost() {
-            const content = document.getElementById('postContent').value.trim();
-            if (!content) return;
-
-            const post = {
-                id: generateId(),
-                userId: currentUser.id,
-                username: currentUser.username,
-                userAvatar: currentUser.avatar,
-                content: content,
-                timestamp: new Date().toISOString(),
-                likes: 0,
-                comments: 0
-            };
-
-            const tx = db.transaction(['posts'], 'readwrite');
-            tx.objectStore('posts').add(post);
-
-            document.getElementById('postContent').value = '';
-            loadPosts();
-        }
-
-        // تحميل المنشورات
-        function loadPosts() {
-            const tx = db.transaction(['posts'], 'readonly');
-            const store = tx.objectStore('posts');
-            const index = store.index('timestamp');
-            const request = index.getAll();
-
-            request.onsuccess = () => {
-                posts = request.result.reverse(); // أحدث منشور أولاً
-                displayPosts();
-                document.getElementById('postsCount').textContent = posts.length + ' منشور';
-                
-                if (currentUser) {
-                    const userPosts = posts.filter(p => p.userId === currentUser.id).length;
-                    document.getElementById('userPostsCount').textContent = userPosts;
-                }
-            };
-        }
-
-        // عرض المنشورات
-        function displayPosts() {
-            const container = document.getElementById('postsContainer');
-            container.innerHTML = '';
-
-            posts.slice(0, 20).forEach(post => {
-                const div = document.createElement('div');
-                div.className = 'post-card';
-                div.innerHTML = `
-                    <div class="post-header">
-                        <div class="post-avatar">${post.userAvatar}</div>
-                        <div>
-                            <div class="post-author">${post.username}</div>
-                            <div class="post-time">${new Date(post.timestamp).toLocaleString('ar-EG')}</div>
-                        </div>
-                    </div>
-                    <div class="post-content">${post.content}</div>
-                    <div class="post-stats">
-                        <span class="post-stat" onclick="likePost('${post.id}')">❤️ ${post.likes}</span>
-                        <span class="post-stat" onclick="commentPost('${post.id}')">💬 ${post.comments}</span>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // إعجاب بمنشور
-        function likePost(postId) {
-            const tx = db.transaction(['posts'], 'readwrite');
-            const store = tx.objectStore('posts');
-            store.get(parseInt(postId)).onsuccess = (e) => {
-                const post = e.target.result;
-                if (post) {
-                    post.likes++;
-                    store.put(post);
-                    loadPosts();
-                }
-            };
-        }
-
-        // تحديث إحصائيات المستخدم
-        function loadStats() {
-            document.getElementById('usersCount').textContent = users.length + ' عضو';
-            
-            // حساب المتابعين والمتابعات (للبساطة نستخدم أرقاماً عشوائية)
-            document.getElementById('userFollowersCount').textContent = Math.floor(Math.random() * 100);
-            document.getElementById('userFollowingCount').textContent = Math.floor(Math.random() * 50);
-        }
-
-        // تحديث اقتراحات المستخدمين
-        function updateSuggestedUsers() {
-            const container = document.getElementById('suggestedContainer');
-            container.innerHTML = '';
-
-            const suggested = users
-                .filter(u => u.id !== currentUser?.id)
-                .slice(0, 5);
-
-            suggested.forEach(user => {
-                const div = document.createElement('div');
-                div.className = 'suggested-item';
-                div.innerHTML = `
-                    <div class="suggested-avatar">${user.avatar}</div>
-                    <div class="suggested-info">
-                        <div class="suggested-name">${user.username}</div>
-                    </div>
-                    <button class="follow-btn" onclick="followUser('${user.id}')">متابعة</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // متابعة مستخدم
-        function followUser(userId) {
-            alert('تمت المتابعة بنجاح');
-        }
-
-        // فتح محادثة (يمكن تطويرها لاحقاً)
-        function openChat(user) {
-            alert(`فتح محادثة مع ${user.username} - قيد التطوير`);
-        }
-
-        // تحديث دوري
-        setInterval(() => {
-            if (currentUser) {
-                loadUsers();
-                loadPosts();
             }
-        }, 5000);
-    </script>
+            
+            for(let fake of fakeDoors) {
+                if(!fake.active) continue;
+                if(player.x < fake.x + fake.width && player.x + PLAYER_SIZE > fake.x &&
+                   player.y + PLAYER_SIZE > fake.y && player.y < fake.y + fake.height) {
+                    deaths++;
+                    document.getElementById('deathsDisplay').innerHTML = `💀 الموت: ${deaths}`;
+                    document.getElementById('whisperText').innerHTML = "☠️ باب وهمي! خدعك ☠️";
+                    playDeathSound();
+                    gameRunning = false;
+                    document.querySelector('.game-container').classList.add('shake-effect');
+                    setTimeout(() => document.querySelector('.game-container').classList.remove('shake-effect'), 300);
+                    setTimeout(() => loadLevel(currentLevel), 500);
+                    return true;
+                }
+            }
+            
+            if(player.x < exitDoor.x + exitDoor.width && player.x + PLAYER_SIZE > exitDoor.x &&
+               player.y + PLAYER_SIZE > exitDoor.y && player.y < exitDoor.y + exitDoor.height) {
+                activateWin();
+                return true;
+            }
+            
+            for(let trap of traps) {
+                if(!trap.active) continue;
+                if(player.x < trap.x + trap.w && player.x + PLAYER_SIZE > trap.x &&
+                   player.y + PLAYER_SIZE > trap.y && player.y < trap.y + trap.h) {
+                    die();
+                    return true;
+                }
+            }
+            
+            for(let enemy of enemies) {
+                if(player.x < enemy.x + enemy.size && player.x + PLAYER_SIZE > enemy.x &&
+                   player.y + PLAYER_SIZE > enemy.y && player.y < enemy.y + enemy.size) {
+                    die();
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        function activateWin() {
+            if(winMode || levelTransition) return;
+            winMode = true;
+            gameRunning = false;
+            playWinSound();
+            
+            if(currentLevel === 4) document.getElementById('whisperText').innerHTML = "🎉 تجنبت الباب الوهمي! 🎉";
+            else if(currentLevel === 5) document.getElementById('whisperText').innerHTML = "🎉 عبرت الفخاخ المتقطعة! 🎉";
+            else document.getElementById('whisperText').innerHTML = "🎉 دخلت الباب! 🎉";
+            
+            setTimeout(() => {
+                if(currentLevel < 5) {
+                    currentLevel++;
+                    document.getElementById('levelDisplay').innerHTML = `🩸 الطابق ${currentLevel}`;
+                    loadLevel(currentLevel);
+                    document.getElementById('whisperText').innerHTML = "☠️ موسيقى الرتيرو تعزف... استمتع... ☠️";
+                } else {
+                    document.getElementById('whisperText').innerHTML = "🏆 انتصرت! 🏆";
+                    setTimeout(() => {
+                        currentLevel = 1; deaths = 0;
+                        document.getElementById('levelDisplay').innerHTML = `🩸 الطابق 1`;
+                        document.getElementById('deathsDisplay').innerHTML = `💀 الموت: 0`;
+                        loadLevel(1);
+                        document.getElementById('whisperText').innerHTML = "☠️ بداية جديدة... مع الموسيقى الكلاسيكية... ☠️";
+                    }, 1500);
+                }
+            }, 600);
+        }
+        
+        function die() {
+            if(winMode || levelTransition) return;
+            deaths++;
+            document.getElementById('deathsDisplay').innerHTML = `💀 الموت: ${deaths}`;
+            playDeathSound();
+            gameRunning = false;
+            document.querySelector('.game-container').classList.add('shake-effect');
+            setTimeout(() => document.querySelector('.game-container').classList.remove('shake-effect'), 300);
+            setTimeout(() => loadLevel(currentLevel), 500);
+        }
+        
+        function updateEnemies() {
+            if(winMode || levelTransition) return;
+            for(let enemy of enemies) {
+                if(enemy.type === 'fireball' || enemy.type === 'runner') {
+                    enemy.x += enemy.vx;
+                    if(enemy.x < 30 || enemy.x > canvas.width - enemy.size - 30) enemy.vx *= -1;
+                    enemy.y = enemy.ground || (GROUND_Y - enemy.size);
+                }
+                else if(enemy.type === 'ghost' || enemy.type === 'boss_ghost') {
+                    if(enemy.followsPlayer) {
+                        if(player.x > enemy.x) enemy.x += 0.6;
+                        else enemy.x -= 0.6;
+                    } else {
+                        enemy.x += enemy.vx;
+                        if(enemy.x < 30 || enemy.x > canvas.width - enemy.size - 30) enemy.vx *= -1;
+                    }
+                    enemy.y = enemy.ground || (GROUND_Y - enemy.size);
+                }
+                enemy.x = Math.min(Math.max(enemy.x, 10), canvas.width - enemy.size - 10);
+            }
+            updateFlashingTraps();
+        }
+        
+        function movePlayer() {
+            if(!gameRunning || winMode || levelTransition) return;
+            let moveSpeed = 4.5;
+            if(keys.ArrowLeft) player.x -= moveSpeed;
+            if(keys.ArrowRight) player.x += moveSpeed;
+            player.x = Math.min(Math.max(player.x, 10), canvas.width - PLAYER_SIZE - 10);
+            
+            // تشغيل صوت المشي إذا تحرك اللاعب
+            if(Math.abs(player.x - lastPlayerX) > 2 && player.isOnGround && gameRunning && !winMode) {
+                playWalkSound();
+                lastPlayerX = player.x;
+            }
+        }
+        
+        // ========== رسم محسّن بجودة عالية ==========
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // خلفية متدرجة بتأثير ضوء
+            let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            if(currentLevel <= 2) gradient.addColorStop(0, '#1a0a1a');
+            else if(currentLevel <= 4) gradient.addColorStop(0, '#2a0505');
+            else gradient.addColorStop(0, '#3a0000');
+            gradient.addColorStop(1, '#000000');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // تأثير نجوم متحركة
+            ctx.fillStyle = 'rgba(255,255,200,0.3)';
+            for(let i=0; i<50; i++) {
+                ctx.beginPath();
+                ctx.arc( (i*73) % canvas.width, (Date.now() * 0.5 + i*50) % canvas.height, 1, 0, Math.PI*2);
+                ctx.fill();
+            }
+            
+            // الأرض بظل
+            ctx.fillStyle = '#2a0a0a';
+            ctx.fillRect(0, GROUND_Y - 5, canvas.width, 8);
+            ctx.fillStyle = '#4a0a0a';
+            for(let i=0;i<20;i++) ctx.fillRect(i*45, GROUND_Y - 8, 22, 5);
+            ctx.fillStyle = '#8a0000';
+            ctx.fillRect(0, GROUND_Y, canvas.width, 3);
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(0, GROUND_Y+1, canvas.width, 1);
+            
+            // الفخاخ مع توهج
+            for(let trap of traps) {
+                if(trap.type === 'spike') {
+                    ctx.fillStyle = '#aa3333';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = 'red';
+                    ctx.fillRect(trap.x, trap.y, trap.w, trap.h);
+                    ctx.fillStyle = '#ff0000';
+                    for(let i=0;i<3;i++) ctx.fillRect(trap.x+5+i*6, trap.y-4, 3, 6);
+                    ctx.fillStyle = '#ff8888';
+                    for(let i=0;i<3;i++) ctx.fillRect(trap.x+6+i*6, trap.y-5, 1, 3);
+                }
+            }
+            
+            // فخاخ متقطعة
+            for(let trap of flashingTraps) {
+                if(trap.visible) {
+                    ctx.fillStyle = '#ff5555';
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = 'orange';
+                    ctx.fillRect(trap.x, trap.y, trap.w, trap.h);
+                    ctx.fillStyle = '#ffff00';
+                    for(let i=0;i<3;i++) ctx.fillRect(trap.x+5+i*6, trap.y-4, 3, 6);
+                    ctx.fillStyle = 'rgba(255,255,0,0.6)';
+                    ctx.fillRect(trap.x-2, trap.y-2, trap.w+4, trap.h+4);
+                } else {
+                    ctx.fillStyle = 'rgba(100,0,0,0.15)';
+                    ctx.fillRect(trap.x, trap.y, trap.w, trap.h);
+                }
+            }
+            
+            // أبواب وهمية
+            for(let fake of fakeDoors) {
+                ctx.fillStyle = '#884400';
+                ctx.fillRect(fake.x, fake.y, fake.width, fake.height);
+                ctx.fillStyle = '#ff6600';
+                ctx.fillRect(fake.x+12, fake.y+8, 10, 25);
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(fake.x+fake.width-8, fake.y+fake.height/2, 4, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = '#000000';
+                ctx.font = "bold 12px monospace";
+                ctx.fillText("!", fake.x+15, fake.y+25);
+            }
+            
+            // أعداء بتأثيرات
+            for(let enemy of enemies) {
+                if(enemy.type === 'fireball') {
+                    ctx.fillStyle = '#ff6600';
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = 'red';
+                    ctx.beginPath();
+                    ctx.arc(enemy.x+enemy.size/2, enemy.y+enemy.size/2, enemy.size/2, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffff00';
+                    ctx.beginPath();
+                    ctx.arc(enemy.x+enemy.size/2, enemy.y+enemy.size/2, enemy.size/4, 0, Math.PI*2);
+                    ctx.fill();
+                } else if(enemy.type === 'ghost' || enemy.type === 'boss_ghost') {
+                    ctx.fillStyle = (enemy.type==='boss_ghost') ? '#aa00aa' : '#7744aa';
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = 'magenta';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(enemy.x+5, enemy.y+5, 5, 5);
+                    ctx.fillRect(enemy.x+enemy.size-10, enemy.y+5, 5, 5);
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fillRect(enemy.x+2, enemy.y+enemy.size-8, enemy.size-4, 4);
+                } else if(enemy.type === 'runner') {
+                    ctx.fillStyle = '#aa2200';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(enemy.x+4, enemy.y+4, 4, 4);
+                    ctx.fillRect(enemy.x+enemy.size-8, enemy.y+4, 4, 4);
+                }
+            }
+            ctx.shadowBlur = 0;
+            
+            // باب حقيقي متوهج
+            ctx.fillStyle = '#440000';
+            ctx.fillRect(exitDoor.x, exitDoor.y, exitDoor.width, exitDoor.height);
+            ctx.fillStyle = '#ff2222';
+            ctx.fillRect(exitDoor.x+12, exitDoor.y+8, 10, 25);
+            ctx.fillStyle = '#ffaa44';
+            ctx.beginPath();
+            ctx.arc(exitDoor.x+exitDoor.width-8, exitDoor.y+exitDoor.height/2, 5, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#ffff88';
+            ctx.beginPath();
+            ctx.arc(exitDoor.x+exitDoor.width-8, exitDoor.y+exitDoor.height/2, 2, 0, Math.PI*2);
+            ctx.fill();
+            
+            // لاعب متوهج بظل
+            ctx.fillStyle = '#ccddff';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'white';
+            ctx.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(player.x+7, player.y+6, 4, 4);
+            ctx.fillRect(player.x+14, player.y+6, 4, 4);
+            ctx.fillStyle = '#aa3333';
+            ctx.fillRect(player.x+9, player.y+15, 7, 3);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(player.x+4, player.y+18, 16, 2);
+            ctx.shadowBlur = 0;
+            
+            // تأثيرات رعب إضافية
+            if(currentLevel >= 3) {
+                ctx.fillStyle = 'rgba(255,0,0,0.2)';
+                for(let i=0;i<6;i++) {
+                    ctx.beginPath();
+                    ctx.arc(50 + i*110, 35, 8, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        function update() {
+            if(!winMode && !levelTransition && gameRunning) {
+                movePlayer();
+                applyGravity();
+                updateEnemies();
+                checkCollisions();
+            }
+            draw();
+            requestAnimationFrame(update);
+        }
+        
+        // تفعيل الصوت عند أول تفاعل
+        function enableAudioOnFirstTouch() {
+            initAudio();
+            document.body.removeEventListener('touchstart', enableAudioOnFirstTouch);
+            document.body.removeEventListener('click', enableAudioOnFirstTouch);
+        }
+        document.body.addEventListener('touchstart', enableAudioOnFirstTouch);
+        document.body.addEventListener('click', enableAudioOnFirstTouch);
+        
+        function initTouchControls() {
+            const leftBtn = document.querySelector('[data-key="ArrowLeft"]');
+            const rightBtn = document.querySelector('[data-key="ArrowRight"]');
+            if(leftBtn) {
+                leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); keys.ArrowLeft = true; });
+                leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys.ArrowLeft = false; });
+                leftBtn.addEventListener('mousedown', () => { initAudio(); keys.ArrowLeft = true; });
+                leftBtn.addEventListener('mouseup', () => { keys.ArrowLeft = false; });
+            }
+            if(rightBtn) {
+                rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); keys.ArrowRight = true; });
+                rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys.ArrowRight = false; });
+                rightBtn.addEventListener('mousedown', () => { initAudio(); keys.ArrowRight = true; });
+                rightBtn.addEventListener('mouseup', () => { keys.ArrowRight = false; });
+            }
+            const jumpBtn = document.getElementById('jumpButton');
+            jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); jumpRequested = true; jumpBtn.style.transform = 'scale(0.92)'; });
+            jumpBtn.addEventListener('touchend', (e) => { e.preventDefault(); jumpBtn.style.transform = 'scale(1)'; });
+            jumpBtn.addEventListener('mousedown', () => { initAudio(); jumpRequested = true; jumpBtn.style.transform = 'scale(0.92)'; });
+            jumpBtn.addEventListener('mouseup', () => { jumpBtn.style.transform = 'scale(1)'; });
+            
+            const mobileReset = document.getElementById('mobileReset');
+            mobileReset.addEventListener('touchstart', (e) => {
+                e.preventDefault(); initAudio();
+                currentLevel = 1; deaths = 0;
+                document.getElementById('levelDisplay').innerHTML = `🩸 الطابق 1`;
+                document.getElementById('deathsDisplay').innerHTML = `💀 الموت: 0`;
+                loadLevel(1);
+                document.getElementById('whisperText').innerHTML = "🔄 استعدت... الموسيقى الكلاسيكية تعود... 🔄";
+                setTimeout(() => { document.getElementById('whisperText').innerHTML = "☠️ موسيقى رتيرو + مؤثرات صوتية كلاسيكية... ☠️"; }, 1500);
+            });
+            const resetBtn = document.getElementById('resetBtn');
+            resetBtn.addEventListener('click', () => {
+                initAudio();
+                currentLevel = 1; deaths = 0;
+                document.getElementById('levelDisplay').innerHTML = `🩸 الطابق 1`;
+                document.getElementById('deathsDisplay').innerHTML = `💀 الموت: 0`;
+                loadLevel(1);
+                document.getElementById('whisperText').innerHTML = "🔄 استعدت... الموسيقى الكلاسيكية تعود... 🔄";
+                setTimeout(() => { document.getElementById('whisperText').innerHTML = "☠️ موسيقى رتيرو + مؤثرات صوتية كلاسيكية... ☠️"; }, 1500);
+            });
+        }
+        
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowLeft') { initAudio(); keys.ArrowLeft = true; e.preventDefault(); }
+            if(e.key === 'ArrowRight') { initAudio(); keys.ArrowRight = true; e.preventDefault(); }
+            if(e.key === 'ArrowUp' || e.key === ' ' || e.key === 'Space') { initAudio(); jumpRequested = true; e.preventDefault(); }
+        });
+        window.addEventListener('keyup', (e) => {
+            if(e.key === 'ArrowLeft') { keys.ArrowLeft = false; e.preventDefault(); }
+            if(e.key === 'ArrowRight') { keys.ArrowRight = false; e.preventDefault(); }
+        });
+        
+        canvas.addEventListener('touchstart', (e) => e.preventDefault());
+        canvas.addEventListener('touchmove', (e) => e.preventDefault());
+        
+        loadLevel(1);
+        initTouchControls();
+        update();
+    })();
+</script>
 </body>
 </html>
